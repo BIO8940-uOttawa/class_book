@@ -1,0 +1,7 @@
+text-editor-or-ide
+introduction-to-open-science
+introduction-to-rmarkdown
+introduction-to-github-with-r
+refresher-on-glm
+refresher-on-glm-1
+refresher-on-glm-2
