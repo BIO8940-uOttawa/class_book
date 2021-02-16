@@ -733,6 +733,9 @@ You have successfully used all the essential tools of \texttt{git} 🎉 . You ar
 \hypertarget{part-statistics}{%
 \part{Statistics}\label{part-statistics}}
 
+\hypertarget{part-statistics-1}{%
+\part{Statistics}\label{part-statistics-1}}
+
 \hypertarget{refresher-on-glm}{%
 \chapter{\texorpdfstring{Refresher on \texttt{glm}}{Refresher on glm}}\label{refresher-on-glm}}
 
@@ -794,8 +797,8 @@ Test pour montrer la solution
 
 \includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-14-1.pdf}
 
-\hypertarget{refresher-on-glm-1}{%
-\chapter{\texorpdfstring{Refresher on \texttt{glm}}{Refresher on glm}}\label{refresher-on-glm-1}}
+\hypertarget{introduction-to-linear-mixed-models}{%
+\chapter{Introduction to linear mixed models}\label{introduction-to-linear-mixed-models}}
 
 \hypertarget{practical-2}{%
 \section{Practical}\label{practical-2}}
@@ -903,68 +906,3196 @@ You can use \texttt{summary(unicorns)} to get an overview of the data and/or \te
 \caption{The superb unicorn}\label{fig:unnamed-chunk-16}
 \end{figure}
 
-\hypertarget{refresher-on-glm-2}{%
-\chapter{\texorpdfstring{Refresher on \texttt{glm}}{Refresher on glm}}\label{refresher-on-glm-2}}
+\hypertarget{introduction-to-glmm}{%
+\chapter{\texorpdfstring{Introduction to \texttt{GLMM}}{Introduction to GLMM}}\label{introduction-to-glmm}}
+
+\hypertarget{practical-3}{%
+\section{Practical}\label{practical-3}}
+
+Spatial variation in nutrient availability and herbivory is likely to cause pop-ulation differentiation and maintain genetic diversity in plant populations.Here we measure the extent to which mouse-ear cress (Arabidopsis thaliana)exhibits population and genotypic variation in their responses to these im-portant environmental factors. We are particularly interested in whetherthese populations exhibit nutrient mediated compensation, where higher nutrient levels allow genotypes to better tolerate herbivory (Banta et al.,2010). We use GLMMs to estimate the effect of nutrient levels, simulated hebivory, and their interaction on fruit production in Arabidopsis thaliana(fixed effects), and the extent to which populations vary in their responses(random effects, or variance components)
+
+\hypertarget{packages-and-functions}{%
+\subsection{Packages and functions}\label{packages-and-functions}}
+
+You need to downaload the ``glmm\_funs.R'' script for some functions used in the Practical
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{m1 <-}\StringTok{ }\KeywordTok{glm}\NormalTok{(fish }\OperatorTok{~}\StringTok{ }\NormalTok{french_captain, }\DataTypeTok{data=}\NormalTok{ dads_joke, }\DataTypeTok{family =}\NormalTok{ poisson)}
+\KeywordTok{library}\NormalTok{(lme4)}
+\KeywordTok{library}\NormalTok{(plyr)}
+\KeywordTok{library}\NormalTok{(reshape)}
+\KeywordTok{library}\NormalTok{(tidyverse)}
+\KeywordTok{library}\NormalTok{(gridExtra)}
+\KeywordTok{library}\NormalTok{(lattice)}
+\KeywordTok{source}\NormalTok{(}\StringTok{"data/glmm_funs.R"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\textbf{Exercice 5}
+\hypertarget{the-data-set}{%
+\subsection{The data set}\label{the-data-set}}
 
-On a relevé les notes en maths, anglais et sport d'une classe de 6 élèves et on a stocké ces données dans trois vecteurs :
+In this data set, the response variable is the number of fruits (i.e.~seedcapsules) per plant. The number of fruits produced by an individual plant(the experimental unit) was hypothesized to be a function of fixed effects,including nutrient levels (low vs.~high), simulated herbivory (none vs.~apicalmeristem damage), region (Sweden, Netherlands, Spain), and interactionsamong these. Fruit number was also a function of random effects including both the population and individual genotype. Because Arabidopsis is highlyselfing, seeds of a single individual served as replicates of that individual.There were also nuisance variables, including the placement of the plantin the greenhouse, and the method used to germinate seeds. These were estimated as fixed effects but interactions were excluded.
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{X} observation number (we will use this observation number later, when we are accounting for overdispersion)
+\item
+  \texttt{reg} a factor for region (Netherlands, Spain, Sweden).
+\item
+  \texttt{popu} a factor with a level for each population.
+\item
+  \texttt{gen} a factor with a level for each genotype.
+\item
+  \texttt{rack} a nuisance factor for one of two greenhouse racks.
+\item
+  \texttt{nutrient} a factor with levels for minimal or additional nutrients.
+\item
+  \texttt{amd} a factor with levels for no damage or simulated herbivory (apical meristem damage; we will sometimes refer to this as ``clipping'')
+\item
+  \texttt{status} a nuisance factor for germination method.
+\item
+  \texttt{total.fruits} the response; an integer count of the number of fruits perplant.
+\end{itemize}
+
+\hypertarget{specifying-fixed-and-random-effects}{%
+\subsection{Specifying fixed and random Effects}\label{specifying-fixed-and-random-effects}}
+
+Here we need to select a realistic full model, based on the scientific ques-tions and the data actually at hand. We first load the data set and makesure that each variable is appropriately designated as numeric or factor (i.e.categorical variable).
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{maths <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{12}\NormalTok{, }\DecValTok{16}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{18}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{10}\NormalTok{)}
-\NormalTok{anglais <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{14}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{13}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{17}\NormalTok{, }\DecValTok{11}\NormalTok{)}
-\NormalTok{sport <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{18}\NormalTok{, }\DecValTok{11}\NormalTok{, }\DecValTok{14}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{12}\NormalTok{)}
+\NormalTok{dat_tf <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"data/Banta_TotalFruits.csv"}\NormalTok{)}
+\KeywordTok{str}\NormalTok{(dat_tf)}
 \end{Highlighting}
 \end{Shaded}
 
-Calculer la moyenne des élèves de la classe en anglais.
-
-Calculer la moyenne générale de chaque élève.
-
 \begin{verbatim}
-## [1] 13.16667
+## 'data.frame':    625 obs. of  9 variables:
+##  $ X           : int  1 2 3 4 5 6 7 8 9 10 ...
+##  $ reg         : chr  "NL" "NL" "NL" "NL" ...
+##  $ popu        : chr  "3.NL" "3.NL" "3.NL" "3.NL" ...
+##  $ gen         : int  4 4 4 4 4 4 4 4 4 5 ...
+##  $ rack        : int  2 1 1 2 2 2 2 1 2 1 ...
+##  $ nutrient    : int  1 1 1 1 8 1 1 1 8 1 ...
+##  $ amd         : chr  "clipped" "clipped" "clipped" "clipped" ...
+##  $ status      : chr  "Transplant" "Petri.Plate" "Normal" "Normal" ...
+##  $ total.fruits: int  0 0 0 0 0 0 0 3 2 0 ...
 \end{verbatim}
 
-\begin{verbatim}
-## [1] 14.66667 12.00000 11.66667 14.33333 10.33333 11.00000
-\end{verbatim}
-
-\textbf{Exercice 5}
-
-On a relevé les notes en maths, anglais et sport d'une classe de 6 élèves et on a stocké ces données dans trois vecteurs :
+The \texttt{X}, \texttt{gen}, \texttt{rack} and \texttt{nutrient} variables are coded as integers, but we want them to be factors.
+ We use transform(), which operates within the data set, to avoid typing lots of commands like \texttt{dat\_tf\$rack\ \textless{}-\ factor(dat\_tf\$rack)}
+ At the same time, we reorder the \texttt{clipping} variable so that \texttt{"unclipped"} is the reference level (we could also have used \texttt{relevel(amd,"unclipped")}).
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{maths <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{12}\NormalTok{, }\DecValTok{16}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{18}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{10}\NormalTok{)}
-\NormalTok{anglais <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{14}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{13}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{17}\NormalTok{, }\DecValTok{11}\NormalTok{)}
-\NormalTok{sport <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{18}\NormalTok{, }\DecValTok{11}\NormalTok{, }\DecValTok{14}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{12}\NormalTok{)}
+\NormalTok{dat_tf <-}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}
+\NormalTok{  dat_tf,}
+  \DataTypeTok{X =} \KeywordTok{factor}\NormalTok{(X),}
+  \DataTypeTok{gen =} \KeywordTok{factor}\NormalTok{(gen),}
+  \DataTypeTok{rack =} \KeywordTok{factor}\NormalTok{(rack),}
+  \DataTypeTok{amd =} \KeywordTok{factor}\NormalTok{(amd, }\DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\StringTok{"unclipped"}\NormalTok{, }\StringTok{"clipped"}\NormalTok{)),}
+  \DataTypeTok{nutrient =} \KeywordTok{factor}\NormalTok{(nutrient, }\DataTypeTok{label =} \KeywordTok{c}\NormalTok{(}\StringTok{"Low"}\NormalTok{, }\StringTok{"High"}\NormalTok{))}
+\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-Calculer la moyenne des élèves de la classe en anglais.
+Now we check replication for each genotype (columns) within each population (rows).
 
-Calculer la moyenne générale de chaque élève.
-
-Test pour montrer la solution
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(reptab <-}\StringTok{ }\KeywordTok{with}\NormalTok{(dat_tf, }\KeywordTok{table}\NormalTok{(popu, gen)))}
+\end{Highlighting}
+\end{Shaded}
 
 \begin{verbatim}
-## [1] 13.16667
+##       gen
+## popu    4  5  6 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 27 28 30 34 35 36
+##   1.SP  0  0  0  0  0 39 26 35  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+##   1.SW  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 28 20  0  0  0  0  0
+##   2.SW  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 18 14  0  0  0
+##   3.NL 31 11 13  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+##   5.NL  0  0  0 35 26  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+##   5.SP  0  0  0  0  0  0  0  0 43 22 12  0  0  0  0  0  0  0  0  0  0  0  0  0
+##   6.SP  0  0  0  0  0  0  0  0  0  0  0 13 24 14  0  0  0  0  0  0  0  0  0  0
+##   7.SW  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 45 47 45
+##   8.SP  0  0  0  0  0  0  0  0  0  0  0  0  0  0 13 16 35  0  0  0  0  0  0  0
+\end{verbatim}
+
+\textbf{Exercise}: this mode of inspection is OK for this data set but might fail for much larger data sets or for more levels of nesting. See if you can think of some other numerical or graphical methods for inspecting the structure of data sets. For example,
+- plot(reptab) gives a mosaic plot of the two-way table; examine this, see if you can figure out how to interpret it, and decide whether you think it might be useful
+- try the commands colSums(reptab\textgreater0) and table(colSums(reptab\textgreater0)) (and the equivalent for rowSums) and figure out what they are telling you.
+- Using this recipe, how would you compute the range of number of genotypes per treatment combination?
+
+This reveals that we have only 2--4 populations per region and 2--3 genotypes per population. However, we also have 2--13 replicates per genotype for each treatment combination (four unique treatment combinations: 2 levels of nutrients by 2 levels of simulated herbivory). Thus, even though this was a reasonably large experiment (625 plants), there were a very small number of replicates with which to estimate variance components, and many more potential interactions than our data can support. Therefore, judicious selection of model terms, based on both biology and the data, is warranted. We note that we don't really have enough levels per random effect, nor enough replication per unique treatment combination. Therefore, we decide to omit the fixed effect of ``region'', although we recognize that populations in different regions are widely geographically separated.
+
+We have only two random effects (population, individual), and so Laplace or Gauss-Hermite Quadrature (GHQ) should suffice, rather than requiring more complex methods. However, as in all GLMMs where the scale param- eter is treated as fixed and deviations from the fixed scale parameter would be identifiable (i.e.~Poisson and binomial (N \textgreater{} 1), but not binary, models) we may have to deal with overdispersion.
+
+\hypertarget{look-at-overall-patterns-in-data}{%
+\subsection{Look at overall patterns in data}\label{look-at-overall-patterns-in-data}}
+
+I usually like to start with a relatively simple overall plot of the data, disregarding the random factors, just to see what's going on. For reasons to be discussed below, we choose to look at the data on the log (or log(1 + x) scale. Let's plot either box-and-whisker plots (useful summaries) or dot plots (more detailed, good for seeing if we missed anything).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{qplot}\NormalTok{(}\KeywordTok{interaction}\NormalTok{(nutrient, amd), }\KeywordTok{log}\NormalTok{(}\DecValTok{1} \OperatorTok{+}\StringTok{ }\NormalTok{total.fruits), }\DataTypeTok{data =}\NormalTok{ dat_tf, }\DataTypeTok{geom =} \StringTok{"boxplot"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\NormalTok{reg, }\DataTypeTok{nrow =} \DecValTok{1}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{angle =} \DecValTok{45}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-21-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{qplot}\NormalTok{(}\KeywordTok{interaction}\NormalTok{(nutrient, amd), }\KeywordTok{log}\NormalTok{(}\DecValTok{1} \OperatorTok{+}\StringTok{ }\NormalTok{total.fruits), }\DataTypeTok{data =}\NormalTok{ dat_tf) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\NormalTok{reg, }\DataTypeTok{nrow =} \DecValTok{1}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{stat_sum}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{angle =} \DecValTok{45}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-21-2.pdf}
+
+\textbf{Exercise} generate these plots and figure out how they work before continuing. Try conditioning/faceting on population rather than region: for ggplot you might want to take out the nrow=1 specification. If you want try reorder the subplots by overall mean fruit set and/or colour the points according to the region they come from.
+
+\hypertarget{choose-an-error-distribution}{%
+\subsection{Choose an error distribution}\label{choose-an-error-distribution}}
+
+The data are non-normal in principle (i.e., count data, so our first guess would be a Poisson distribution). If we transform total fruits with the canon- ical link function (log), we hope to see relatively homogeneous variances across categories and groups.
+
+First we define a new factor that represents every combination of geno-type and treatment (nutrient × clipping) treatment, and sort it in order of increasing mean fruit set.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dat_tf <-}\StringTok{ }\NormalTok{dat_tf }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}
+    \DataTypeTok{gna =} \KeywordTok{interaction}\NormalTok{(gen, nutrient, amd),}
+    \DataTypeTok{gna =} \KeywordTok{reorder}\NormalTok{(gna, total.fruits, mean)}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+Now time to plot it
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(dat_tf, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ gna, }\DataTypeTok{y =} \KeywordTok{log}\NormalTok{(}\DecValTok{1} \OperatorTok{+}\StringTok{ }\NormalTok{total.fruits))) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_boxplot}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{angle =} \DecValTok{90}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-23-1.pdf}
+
+We could also calculate the variance for each genotype × treatment combination and provide a statistical summary of these variances.
+This reveals substantial variation among the sample variances on the transformed data. In addition to heterogeneous variances across groups, Figure 1 reveals many zeroes in groups, and some groups with a mean and variance of zero, further suggesting we need a non-normal error distribution, and perhaps something other than a Poisson distribution.
+
+We could calculate λ(mean) for each genotype × treatment combination and provide a statistical summary of each group's λ.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{grpMeans <-}\StringTok{ }\KeywordTok{with}\NormalTok{(dat_tf, }\KeywordTok{tapply}\NormalTok{(total.fruits, }\KeywordTok{list}\NormalTok{(gna), mean))}
+\KeywordTok{summary}\NormalTok{(grpMeans)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    0.00   11.35   23.16   31.86   49.74  122.40
+\end{verbatim}
+
+A core property of the Poisson distribution is that the variance is equal to the mean. A simple diagnostic is a plot of the group variances against the group means:
+
+\begin{itemize}
+\tightlist
+\item
+  Poisson-distributed data will result in a linear pattern with slope = 1
+\item
+  as long as the variance is generally greater than the mean, we call the data overdispersed. Overdispersion comes in various forms:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    a linear mean-variance relationship with Var = φµ (a line through the origin) with φ \textgreater{} 1 is called a quasi-Poisson pattern (this term describes the mean-variance relationship, not any particular proability distribution); we can implement it statistically via quasilikelihood (Venables and Ripley, 2002) or by using a particular parameterization of the negative binomial distribution (``NB1'' inthe terminology of Hardin and Hilbe (2007))
+  \item
+    a semi-quadratic pattern, Var = µ(1 + αµ) or µ(1 + µ/k), is characteristic of overdispersed data that is driven by underlying heterogeneity among samples, either the negative binomial (gamma-Poisson) or the lognormal-Poisson (Elston et al., 2001)
+  \end{itemize}
+\end{itemize}
+
+We've already calculated the group (genotype × treatment) means, we calculate the variances in the same way.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{grpVars <-}\StringTok{ }\KeywordTok{with}\NormalTok{(}
+\NormalTok{  dat_tf,}
+  \KeywordTok{tapply}\NormalTok{(}
+\NormalTok{    total.fruits,}
+    \KeywordTok{list}\NormalTok{(gna), var}
+\NormalTok{  )}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+We can get approximate estimates of the quasi-Poisson (linear) and negative binomial (linear/quadratic) pattern using lm.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm1 <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(grpVars }\OperatorTok{~}\StringTok{ }\NormalTok{grpMeans }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{) }\CommentTok{## `quasi-Poisson' fit}
+\NormalTok{phi.fit <-}\StringTok{ }\KeywordTok{coef}\NormalTok{(lm1)}
+\NormalTok{lm2 <-}\StringTok{ }\KeywordTok{lm}\NormalTok{((grpVars }\OperatorTok{-}\StringTok{ }\NormalTok{grpMeans) }\OperatorTok{~}\StringTok{ }\KeywordTok{I}\NormalTok{(grpMeans}\OperatorTok{^}\DecValTok{2}\NormalTok{) }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{)}
+\NormalTok{k.fit <-}\StringTok{ }\DecValTok{1} \OperatorTok{/}\StringTok{ }\KeywordTok{coef}\NormalTok{(lm2)}
+\end{Highlighting}
+\end{Shaded}
+
+Now we can plot them.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(grpVars }\OperatorTok{~}\StringTok{ }\NormalTok{grpMeans, }\DataTypeTok{xlab =} \StringTok{"group means"}\NormalTok{, }\DataTypeTok{ylab =} \StringTok{"group variances"}\NormalTok{)}
+\KeywordTok{abline}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{), }\DataTypeTok{lty =} \DecValTok{2}\NormalTok{)}
+\KeywordTok{text}\NormalTok{(}\DecValTok{105}\NormalTok{, }\DecValTok{500}\NormalTok{, }\StringTok{"Poisson"}\NormalTok{)}
+\KeywordTok{curve}\NormalTok{(phi.fit }\OperatorTok{*}\StringTok{ }\NormalTok{x, }\DataTypeTok{col =} \DecValTok{2}\NormalTok{, }\DataTypeTok{add =} \OtherTok{TRUE}\NormalTok{)}
+\CommentTok{## bquote() is used to substitute numeric values}
+\CommentTok{## in equations with symbols}
+\KeywordTok{text}\NormalTok{(}\DecValTok{110}\NormalTok{, }\DecValTok{3900}\NormalTok{,}
+  \KeywordTok{bquote}\NormalTok{(}\KeywordTok{paste}\NormalTok{(}\StringTok{"QP: "}\NormalTok{, sigma}\OperatorTok{^}\DecValTok{2} \OperatorTok{==}\StringTok{ }\NormalTok{.(}\KeywordTok{round}\NormalTok{(phi.fit, }\DecValTok{1}\NormalTok{)) }\OperatorTok{*}\StringTok{ }\NormalTok{mu)),}
+  \DataTypeTok{col =} \DecValTok{2}
+\NormalTok{)}
+\KeywordTok{curve}\NormalTok{(x }\OperatorTok{*}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{+}\StringTok{ }\NormalTok{x }\OperatorTok{/}\StringTok{ }\NormalTok{k.fit), }\DataTypeTok{col =} \DecValTok{4}\NormalTok{, }\DataTypeTok{add =} \OtherTok{TRUE}\NormalTok{)}
+\KeywordTok{text}\NormalTok{(}\DecValTok{104}\NormalTok{, }\DecValTok{7200}\NormalTok{, }\KeywordTok{paste}\NormalTok{(}\StringTok{"NB: k="}\NormalTok{, }\KeywordTok{round}\NormalTok{(k.fit, }\DecValTok{1}\NormalTok{), }\DataTypeTok{sep =} \StringTok{""}\NormalTok{), }\DataTypeTok{col =} \DecValTok{4}\NormalTok{)}
+\NormalTok{Lfit <-}\StringTok{ }\KeywordTok{loess}\NormalTok{(grpVars }\OperatorTok{~}\StringTok{ }\NormalTok{grpMeans)}
+\NormalTok{mvec <-}\StringTok{ }\DecValTok{0}\OperatorTok{:}\DecValTok{120}
+\KeywordTok{lines}\NormalTok{(mvec, }\KeywordTok{predict}\NormalTok{(Lfit, mvec), }\DataTypeTok{col =} \DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-27-1.pdf}
+
+Same with ggplot
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(}
+  \KeywordTok{data.frame}\NormalTok{(grpMeans, grpVars),}
+  \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ grpMeans, }\DataTypeTok{y =}\NormalTok{ grpVars)}
+\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_smooth}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{colour =} \StringTok{"Loess"}\NormalTok{, }\DataTypeTok{fill =} \StringTok{"Loess"}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_smooth}\NormalTok{(}\DataTypeTok{method =} \StringTok{"lm"}\NormalTok{, }\DataTypeTok{formula =}\NormalTok{ y }\OperatorTok{~}\StringTok{ }\NormalTok{x }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{colour =} \StringTok{"Q_Pois"}\NormalTok{, }\DataTypeTok{fill =} \StringTok{"Q_Pois"}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{stat_function}\NormalTok{(}
+    \DataTypeTok{fun =} \ControlFlowTok{function}\NormalTok{(x) x }\OperatorTok{*}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{+}\StringTok{ }\NormalTok{x }\OperatorTok{/}\StringTok{ }\NormalTok{k.fit),}
+    \KeywordTok{aes}\NormalTok{(}\DataTypeTok{colour =} \StringTok{"Neg_bin"}\NormalTok{, }\DataTypeTok{fill =} \StringTok{"Neg_bin"}\NormalTok{)}
+\NormalTok{  ) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_abline}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{intercept =} \DecValTok{0}\NormalTok{, }\DataTypeTok{slope =} \DecValTok{1}\NormalTok{, }\DataTypeTok{colour =} \StringTok{"Poisson"}\NormalTok{, }\DataTypeTok{fill =} \StringTok{"Poisson"}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_colour_manual}\NormalTok{(}\DataTypeTok{name =} \StringTok{"legend"}\NormalTok{, }\DataTypeTok{values =} \KeywordTok{c}\NormalTok{(}\StringTok{"blue"}\NormalTok{, }\StringTok{"purple"}\NormalTok{, }\StringTok{"black"}\NormalTok{, }\StringTok{"red"}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_fill_manual}\NormalTok{(}\DataTypeTok{name =} \StringTok{"legend"}\NormalTok{, }\DataTypeTok{values =} \KeywordTok{c}\NormalTok{(}\StringTok{"blue"}\NormalTok{, }\StringTok{"purple"}\NormalTok{, }\StringTok{"black"}\NormalTok{, }\StringTok{"red"}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{guides}\NormalTok{(}\DataTypeTok{fill =} \OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Ignoring unknown aesthetics: fill
+
+## Warning: Ignoring unknown aesthetics: fill
 \end{verbatim}
 
 \begin{verbatim}
-## [1] 14.66667 12.00000 11.66667 14.33333 10.33333 11.00000
+## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 \end{verbatim}
 
-\begin{center}\includegraphics[width=0.2\linewidth]{BIO8940_book_files/figure-latex/unnamed-chunk-21-1} \end{center}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-28-1.pdf}
 
-\begin{center}\includegraphics[width=0.2\linewidth]{images/unicorn} \end{center}
+These fits are not rigorous statistical tests --- they violate a variety of assumptions of linear regression (e.g.~constant variance, independence), but they are good enough to give us an initial guess about what distributions we should use.
+
+\textbf{Exercise}
+
+\begin{itemize}
+\tightlist
+\item
+  compare a simple quadratic fit to the data (i.e., without the linear part) with the negative binomial and quasipoisson fits
+\end{itemize}
+
+\hypertarget{plotting-the-response-vs-treatments}{%
+\subsubsection{Plotting the response vs treatments}\label{plotting-the-response-vs-treatments}}
+
+Just to avoid surprises
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(dat_tf, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ amd, }\DataTypeTok{y =} \KeywordTok{log}\NormalTok{(total.fruits }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{), }\DataTypeTok{colour =}\NormalTok{ nutrient)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\CommentTok{## need to use as.numeric(amd) to get lines}
+\StringTok{  }\KeywordTok{stat_summary}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{as.numeric}\NormalTok{(amd)), }\DataTypeTok{fun =}\NormalTok{ mean, }\DataTypeTok{geom =} \StringTok{"line"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{theme}\NormalTok{(}\DataTypeTok{panel.margin =} \KeywordTok{unit}\NormalTok{(}\DecValTok{0}\NormalTok{, }\StringTok{"lines"}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\NormalTok{popu)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: `panel.margin` is deprecated. Please use `panel.spacing` property
+## instead
+\end{verbatim}
+
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-29-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(dat_tf, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ amd, }\DataTypeTok{y =} \KeywordTok{log}\NormalTok{(total.fruits }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{), }\DataTypeTok{colour =}\NormalTok{ gen)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{stat_summary}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{as.numeric}\NormalTok{(amd)), }\DataTypeTok{fun =}\NormalTok{ mean, }\DataTypeTok{geom =} \StringTok{"line"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\CommentTok{## label_both adds variable name ('nutrient') to facet labels}
+\StringTok{  }\KeywordTok{facet_grid}\NormalTok{(. }\OperatorTok{~}\StringTok{ }\NormalTok{nutrient, }\DataTypeTok{labeller =}\NormalTok{ label_both)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-29-2.pdf}
+
+\hypertarget{fitting-group-wise-glm}{%
+\subsection{Fitting group-wise GLM}\label{fitting-group-wise-glm}}
+
+Another general starting approach is to fit GLMs to each group of data separately, equivalent to treating the grouping variables as fixed effects.
+This should result in reasonable variation among treatment effects. We first fit the models, and then examine the coefficients.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{glm.lis <-}\StringTok{ }\KeywordTok{lmList}\NormalTok{(total.fruits }\OperatorTok{~}\StringTok{ }\NormalTok{nutrient }\OperatorTok{*}\StringTok{ }\NormalTok{amd }\OperatorTok{|}\StringTok{ }\NormalTok{gen, }\DataTypeTok{data =}\NormalTok{ dat_tf, }\DataTypeTok{family =} \StringTok{"poisson"}\NormalTok{)}
+\KeywordTok{plot.lmList}\NormalTok{(glm.lis)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Using grp as id variables
+\end{verbatim}
+
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-30-1.pdf}
+
+\textbf{Exercise}
+Fit plot to examine output
+
+\hypertarget{fitting-and-evaluating-glmms}{%
+\subsection{Fitting and evaluating GLMMs}\label{fitting-and-evaluating-glmms}}
+
+Now we (try to) build and fit a full model, using glmer in the lme4 package9 . This model has random effects for all genotype and population × treatment random effects, and for the nuisance variables for the rack and germination method (status). (Given the mean-variance relationship we saw it's pretty clear that we are going to have to proceed eventually to a model with overdispersion, but we fit the Poisson model first for illustration.)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mp1 <-}\StringTok{ }\KeywordTok{glmer}\NormalTok{(total.fruits }\OperatorTok{~}\StringTok{ }\NormalTok{nutrient }\OperatorTok{*}\StringTok{ }\NormalTok{amd }\OperatorTok{+}
+\StringTok{  }\NormalTok{rack }\OperatorTok{+}\StringTok{ }\NormalTok{status }\OperatorTok{+}
+\StringTok{  }\NormalTok{(amd }\OperatorTok{*}\StringTok{ }\NormalTok{nutrient }\OperatorTok{|}\StringTok{ }\NormalTok{popu) }\OperatorTok{+}
+\StringTok{  }\NormalTok{(amd }\OperatorTok{*}\StringTok{ }\NormalTok{nutrient }\OperatorTok{|}\StringTok{ }\NormalTok{gen),}
+\DataTypeTok{data =}\NormalTok{ dat_tf, }\DataTypeTok{family =} \StringTok{"poisson"}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0132432 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{overdisp_fun}\NormalTok{(mp1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       chisq       ratio           p 
+## 13909.46562    23.25998     0.00000
+\end{verbatim}
+
+We can ignore the model convergence for the moment. This shows that the data are (extremely) over-dispersed, given the model.
+
+Now we add the observation-level random effect to the model to account for overdispersion (Elston et al., 2001):
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mp2 <-}\StringTok{ }\KeywordTok{update}\NormalTok{(mp1, . }\OperatorTok{~}\StringTok{ }\NormalTok{. }\OperatorTok{+}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{|}\StringTok{ }\NormalTok{X))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in (function (fn, par, lower = rep.int(-Inf, n), upper = rep.int(Inf, :
+## failure to converge in 10000 evaluations
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in optwrap(optimizer, devfun, start, rho$lower, control = control, :
+## convergence code 4 from Nelder_Mead: failure to converge in 10000 evaluations
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.169728 (tol = 0.002, component 1)
+\end{verbatim}
+
+The model takes much longer to fit (and gives warnings).
+We look just at the variance components. In particular, if we look at the correlation matrix among the genotype random effects, we see a perfect
+correlation.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{attr}\NormalTok{(}\KeywordTok{VarCorr}\NormalTok{(mp2)}\OperatorTok{$}\NormalTok{gen, }\StringTok{"correlation"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                         (Intercept) amdclipped nutrientHigh
+## (Intercept)               1.0000000 -0.9991408   -0.9877061
+## amdclipped               -0.9991408  1.0000000    0.9916060
+## nutrientHigh             -0.9877061  0.9916060    1.0000000
+## amdclipped:nutrientHigh   0.8225706 -0.8397183   -0.9012402
+##                         amdclipped:nutrientHigh
+## (Intercept)                           0.8225706
+## amdclipped                           -0.8397183
+## nutrientHigh                         -0.9012402
+## amdclipped:nutrientHigh               1.0000000
+\end{verbatim}
+
+We'll try getting rid of the correlations between clipping (amd) and nutrients, using amd+nutrient instead of amd*nutrient in the random effects specification (here it seems easier to re-do the model rather than using update to add and subtract terms).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mp3 <-}\StringTok{ }\KeywordTok{glmer}\NormalTok{(total.fruits }\OperatorTok{~}\StringTok{ }\NormalTok{nutrient }\OperatorTok{*}\StringTok{ }\NormalTok{amd }\OperatorTok{+}
+\StringTok{  }\NormalTok{rack }\OperatorTok{+}\StringTok{ }\NormalTok{status }\OperatorTok{+}
+\StringTok{  }\NormalTok{(amd }\OperatorTok{+}\StringTok{ }\NormalTok{nutrient }\OperatorTok{|}\StringTok{ }\NormalTok{popu) }\OperatorTok{+}
+\StringTok{  }\NormalTok{(amd }\OperatorTok{+}\StringTok{ }\NormalTok{nutrient }\OperatorTok{|}\StringTok{ }\NormalTok{gen) }\OperatorTok{+}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{|}\StringTok{ }\NormalTok{X),}
+\DataTypeTok{data =}\NormalTok{ dat_tf, }\DataTypeTok{family =} \StringTok{"poisson"}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.17819 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{attr}\NormalTok{(}\KeywordTok{VarCorr}\NormalTok{(mp3)}\OperatorTok{$}\NormalTok{gen, }\StringTok{"correlation"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##              (Intercept) amdclipped nutrientHigh
+## (Intercept)    1.0000000 -0.7762341   -0.9979863
+## amdclipped    -0.7762341  1.0000000    0.7743002
+## nutrientHigh  -0.9979863  0.7743002    1.0000000
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{attr}\NormalTok{(}\KeywordTok{VarCorr}\NormalTok{(mp3)}\OperatorTok{$}\NormalTok{popu, }\StringTok{"correlation"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##              (Intercept) amdclipped nutrientHigh
+## (Intercept)    1.0000000  0.9995678    0.9973568
+## amdclipped     0.9995678  1.0000000    0.9961872
+## nutrientHigh   0.9973568  0.9961872    1.0000000
+\end{verbatim}
+
+Unfortunately, we still have perfect correlations among the random effects terms. For some models (e.g.~random-slope models), it is possible to fit random effects models in such a way that the correlation between the different parameters (intercept and slope in the case of random-slope models) is constrained to be zero, by fitting a model like (1\textbar f)+(0+x\textbar f); unfortunately, because of the way lme4 is set up, this is considerably more difficult with categorical predictors (factors).
+
+We have to reduce the model further in some way in order not to overfit (i.e., in order to not have perfect ±1 correlations among random effects). It looks like we can't allow both nutrients and clipping in the random effect model at either the population or the genotype level. However, it's hard to know whether we should proceed with amd or nutrient, both, or neither in the model.
+
+A convenient way to proceed if we are going to try fitting several different combinations of random effects is to fit the model with all the fixed effects but only observation-level random effects, and then to use update to add various components to it.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mp_obs <-}\StringTok{ }\KeywordTok{glmer}\NormalTok{(total.fruits }\OperatorTok{~}\StringTok{ }\NormalTok{nutrient }\OperatorTok{*}\StringTok{ }\NormalTok{amd }\OperatorTok{+}
+\StringTok{  }\NormalTok{rack }\OperatorTok{+}\StringTok{ }\NormalTok{status }\OperatorTok{+}
+\StringTok{  }\NormalTok{(}\DecValTok{1} \OperatorTok{|}\StringTok{ }\NormalTok{X),}
+\DataTypeTok{data =}\NormalTok{ dat_tf, }\DataTypeTok{family =} \StringTok{"poisson"}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Now, for example, \texttt{update(mp\_obs,.\textasciitilde{}.+(1\textbar{}gen)+(amd\textbar{}popu))} fits the model with intercept random effects at the genotype level and variation in clipping effects across populations.
+
+\textbf{Exercise} using update, fit the models with (1) clipping variation at both genotype and population levels; (2) nutrient variation at both genotype and populations; using printvc, convince yourself that trying to fit variation in either clipping or nutrients leads to overfitting (perfect correlations). Fit the model with only intercept variation at the population and genotype levels, saving it as mp4; show that there is non-zero variance estimated
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mp4 <-}\StringTok{ }\KeywordTok{update}\NormalTok{(mp_obs, . }\OperatorTok{~}\StringTok{ }\NormalTok{. }\OperatorTok{+}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{|}\StringTok{ }\NormalTok{gen) }\OperatorTok{+}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{|}\StringTok{ }\NormalTok{popu))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0256392 (tol = 0.002, component 1)
+\end{verbatim}
+
+In other words, while it's biologically plausible that there is some variation in the nutrient or clipping effect at the genotype or population levels,
+with this modeling approach we really don't have enough data to speak
+confidently about these effects.
+Let's check that mp4 no longer incorporates overdispersion (the observationlevel random effect should have taken care of it):
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{overdisp_fun}\NormalTok{(mp4)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       chisq       ratio           p 
+## 177.3529154   0.2883787   1.0000000
+\end{verbatim}
+
+\hypertarget{inference}{%
+\subsection{Inference}\label{inference}}
+
+\hypertarget{random-effects}{%
+\subsubsection{Random effects}\label{random-effects}}
+
+\texttt{glmer} (\texttt{lmer}) does not return information about the standard errors or confidence intervals of the variance components.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{VarCorr}\NormalTok{(mp4)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  Groups Name        Std.Dev.
+##  X      (Intercept) 1.43206 
+##  gen    (Intercept) 0.28728 
+##  popu   (Intercept) 0.80614
+\end{verbatim}
+
+\hypertarget{testing-for-random-effects}{%
+\paragraph{Testing for random Effects}\label{testing-for-random-effects}}
+
+If we want to test the significance of the random effects we can fit reduced models and run likelihood ratio tests via anova, keeping in mind that in this case (testing a null hypothesis of zero variance, where the parameter is on the boundary of its feasible region) the reported p value is approximately 21twice what it should be.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mp4v1 <-}\StringTok{ }\KeywordTok{update}\NormalTok{(mp_obs, . }\OperatorTok{~}\StringTok{ }\NormalTok{. }\OperatorTok{+}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{|}\StringTok{ }\NormalTok{popu)) }\CommentTok{## popu only (drop gen)}
+\NormalTok{mp4v2 <-}\StringTok{ }\KeywordTok{update}\NormalTok{(mp_obs, . }\OperatorTok{~}\StringTok{ }\NormalTok{. }\OperatorTok{+}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{|}\StringTok{ }\NormalTok{gen)) }\CommentTok{## gen only (drop popu)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## unable to evaluate scaled gradient
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge: degenerate Hessian with 2 negative eigenvalues
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{anova}\NormalTok{(mp4, mp4v1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Data: dat_tf
+## Models:
+## mp4v1: total.fruits ~ nutrient + amd + rack + status + (1 | X) + (1 | 
+## mp4v1:     popu) + nutrient:amd
+## mp4: total.fruits ~ nutrient + amd + rack + status + (1 | X) + (1 | 
+## mp4:     gen) + (1 | popu) + nutrient:amd
+##       npar    AIC    BIC  logLik deviance  Chisq Df Pr(>Chisq)  
+## mp4v1    9 5017.4 5057.4 -2499.7   4999.4                       
+## mp4     10 5015.4 5059.8 -2497.7   4995.4 4.0627  1    0.04384 *
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{anova}\NormalTok{(mp4, mp4v2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Data: dat_tf
+## Models:
+## mp4v2: total.fruits ~ nutrient + amd + rack + status + (1 | X) + (1 | 
+## mp4v2:     gen) + nutrient:amd
+## mp4: total.fruits ~ nutrient + amd + rack + status + (1 | X) + (1 | 
+## mp4:     gen) + (1 | popu) + nutrient:amd
+##       npar    AIC    BIC  logLik deviance  Chisq Df Pr(>Chisq)    
+## mp4v2    9 5031.6 5071.5 -2506.8   5013.6                         
+## mp4     10 5015.4 5059.8 -2497.7   4995.4 18.211  1  1.977e-05 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+For various forms of linear mixed models, the RLRsim package can do efficient simulation-based hypothesis testing of variance components --- un- fortunately, that doesn't include GLMMs. If we are sufficiently patient we can do hypothesis testing via brute-force parametric bootstrapping where we repeatedly simulate data from the reduced (null) model, fit both the re- duced and full models to the simulated data, and compute the distribution of the deviance (change in -2 log likelihood). The code below took about half an hour on a reasonably modern desktop computer.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{simdev <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{() \{}
+\NormalTok{  newdat <-}\StringTok{ }\KeywordTok{simulate}\NormalTok{(mp4v1)}
+\NormalTok{  reduced <-}\StringTok{ }\NormalTok{lme4}\OperatorTok{::}\KeywordTok{refit}\NormalTok{(mp4v1, newdat)}
+\NormalTok{  full <-}\StringTok{ }\NormalTok{lme4}\OperatorTok{::}\KeywordTok{refit}\NormalTok{(mp4, newdat)}
+  \DecValTok{2} \OperatorTok{*}\StringTok{ }\NormalTok{(}\KeywordTok{c}\NormalTok{(}\KeywordTok{logLik}\NormalTok{(full) }\OperatorTok{-}\StringTok{ }\KeywordTok{logLik}\NormalTok{(reduced)))}
+\NormalTok{\}}
+
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{101}\NormalTok{)}
+\CommentTok{## raply in plyr is a convenient wrapper for repeating the simulation many times}
+\NormalTok{nulldist <-}\StringTok{ }\KeywordTok{raply}\NormalTok{(}\DecValTok{200}\NormalTok{, }\KeywordTok{simdev}\NormalTok{(), }\DataTypeTok{.progress =} \StringTok{"text"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   |                                                                              |                                                                      |   0%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## unable to evaluate scaled gradient
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge: degenerate Hessian with 1 negative eigenvalues
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.034332 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.326792 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=                                                                     |   1%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0381453 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0833254 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=                                                                     |   2%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.216897 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0679386 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0137951 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0515074 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==                                                                    |   2%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.139723 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.204272 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==                                                                    |   3%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## unable to evaluate scaled gradient
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge: degenerate Hessian with 2 negative eigenvalues
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.287832 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==                                                                    |   4%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.295037 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.170063 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===                                                                   |   4%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.139615 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.218175 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.105246 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, : Model is nearly unidentifiable: very large eigenvalue
+##  - Rescale variables?
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |====                                                                  |   5%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0159655 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.113201 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |====                                                                  |   6%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.167003 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 3.65577 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.136393 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.451277 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=====                                                                 |   6%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0358983 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.062223 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=====                                                                 |   7%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.059137 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 1.04298 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=====                                                                 |   8%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00907225 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.100887 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |======                                                                |   8%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.062197 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.022746 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.116662 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0667373 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |======                                                                |   9%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0207306 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.241485 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=======                                                               |  10%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0170721 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0695781 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0958116 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0675959 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.223728 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.194688 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |========                                                              |  11%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 1.76788 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.289098 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |========                                                              |  12%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0494891 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.955049 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.280441 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.087024 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=========                                                             |  12%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00916502 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0265803 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=========                                                             |  13%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0346654 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.543293 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=========                                                             |  14%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0373646 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.172111 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==========                                                            |  14%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00401212 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0474297 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.232778 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.180694 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==========                                                            |  15%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.517583 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.198767 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===========                                                           |  16%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.155859 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0670381 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0765935 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |============                                                          |  16%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0425117 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.232008 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |============                                                          |  17%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0245993 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |============                                                          |  18%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.169777 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.224206 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=============                                                         |  18%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.49695 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.285935 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0272985 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.130318 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=============                                                         |  19%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0476439 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.105853 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==============                                                        |  20%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.765862 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.310519 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.506625 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00718756 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0351902 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 1.40561 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===============                                                       |  21%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0254293 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.316967 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===============                                                       |  22%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.046982 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0218358 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.293223 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |================                                                      |  22%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0536876 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |================                                                      |  23%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0051318 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.540508 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |================                                                      |  24%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0541725 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=================                                                     |  24%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.237771 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.890926 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0283037 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==================                                                    |  25%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0264377 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.296765 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==================                                                    |  26%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.184407 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0923782 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.121569 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===================                                                   |  26%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.555936 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.24895 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===================                                                   |  27%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.160818 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.163218 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===================                                                   |  28%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.256146 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |====================                                                  |  28%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in (function (fn, par, lower = rep.int(-Inf, n), upper = rep.int(Inf, :
+## failure to converge in 10000 evaluations
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in optwrap(optimizer, ff, x0, lower = lower, control =
+## control$optCtrl, : convergence code 4 from Nelder_Mead: failure to converge in
+## 10000 evaluations
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.628415 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 1.6374 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0221645 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 1.17831 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |====================                                                  |  29%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.379279 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.472537 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=====================                                                 |  30%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.526607 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.304955 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0134233 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0290297 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.680275 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |======================                                                |  31%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.288594 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.628858 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |======================                                                |  32%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00235192 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.932113 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.809798 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.243318 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=======================                                               |  32%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0662762 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=======================                                               |  33%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.456587 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=======================                                               |  34%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.06068 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |========================                                              |  34%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.281568 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0319981 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.632976 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |========================                                              |  35%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00506098 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=========================                                             |  36%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.458782 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.170021 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0142386 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==========================                                            |  36%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0233489 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0582248 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==========================                                            |  37%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0532464 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0487784 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==========================                                            |  38%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0755488 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===========================                                           |  38%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.683856 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.340453 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===========================                                           |  39%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0371811 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.101813 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |============================                                          |  40%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.113489 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.847995 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.110817 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.494009 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.133306 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=============================                                         |  41%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.459998 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.205882 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=============================                                         |  42%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0189428 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.947115 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.324451 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.930024 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==============================                                        |  42%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.027088 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.77653 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==============================                                        |  43%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.146514 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.214847 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==============================                                        |  44%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00574883 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0615424 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===============================                                       |  44%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0933839 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0117702 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0212096 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |================================                                      |  45%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0151684 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.217753 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |================================                                      |  46%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.970016 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.37001 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=================================                                     |  46%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0590874 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.211813 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=================================                                     |  47%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0111369 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.492326 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=================================                                     |  48%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.284315 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.205266 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==================================                                    |  48%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0133391 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.681568 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0800354 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.281046 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==================================                                    |  49%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.099758 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.259482 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===================================                                   |  50%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.19865 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 1.39823 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 1.2077 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 1.27377 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0389553 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.189858 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |====================================                                  |  51%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0849736 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, : Model is nearly unidentifiable: very large eigenvalue
+##  - Rescale variables?
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0788083 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |====================================                                  |  52%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0389021 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.601428 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00573196 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.66345 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=====================================                                 |  52%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00275269 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0092245 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=====================================                                 |  53%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.321281 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=====================================                                 |  54%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0576061 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.128076 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |======================================                                |  54%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in (function (fn, par, lower = rep.int(-Inf, n), upper = rep.int(Inf, :
+## failure to converge in 10000 evaluations
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in optwrap(optimizer, ff, x0, lower = lower, control =
+## control$optCtrl, : convergence code 4 from Nelder_Mead: failure to converge in
+## 10000 evaluations
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0503382 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 1.55127 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0433467 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |======================================                                |  55%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0146985 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## unable to evaluate scaled gradient
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge: degenerate Hessian with 1 negative eigenvalues
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=======================================                               |  56%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0376683 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.261354 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.515115 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.636308 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |========================================                              |  56%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.185487 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |========================================                              |  57%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.201229 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |========================================                              |  58%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0443299 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.32257 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=========================================                             |  58%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.141367 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.129376 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.752748 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.606451 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=========================================                             |  59%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.395687 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==========================================                            |  60%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00262567 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.383026 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.150216 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 1.35813 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.220961 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.351333 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===========================================                           |  61%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.090204 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 1.02523 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===========================================                           |  62%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0504 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.20689 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.074946 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.47318 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |============================================                          |  62%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.195422 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.180427 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |============================================                          |  63%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00711777 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.40902 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |============================================                          |  64%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 7.47428 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 1.40167 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=============================================                         |  64%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0631196 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0206458 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0187611 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==============================================                        |  65%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0288062 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0318447 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==============================================                        |  66%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.305001 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.902735 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0141916 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.242265 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===============================================                       |  66%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0164186 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.359134 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===============================================                       |  67%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0284098 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0414913 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===============================================                       |  68%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0218979 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.413742 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |================================================                      |  68%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.110111 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.210111 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in (function (fn, par, lower = rep.int(-Inf, n), upper = rep.int(Inf, :
+## failure to converge in 10000 evaluations
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in optwrap(optimizer, ff, x0, lower = lower, control =
+## control$optCtrl, : convergence code 4 from Nelder_Mead: failure to converge in
+## 10000 evaluations
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 1.04415 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 1.26557 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |================================================                      |  69%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0432216 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 1.76025 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=================================================                     |  70%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0921936 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.972765 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0654867 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0243247 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0827963 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, : Model is nearly unidentifiable: very large eigenvalue
+##  - Rescale variables?
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.174645 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==================================================                    |  71%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0144765 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==================================================                    |  72%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.749076 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0623135 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0566863 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.32602 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===================================================                   |  72%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.160591 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===================================================                   |  73%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0236175 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===================================================                   |  74%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00659664 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.218183 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |====================================================                  |  74%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00879464 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.231791 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.214322 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |====================================================                  |  75%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.166783 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.140934 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=====================================================                 |  76%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.116991 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.327202 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0920949 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |======================================================                |  76%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0273549 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |======================================================                |  77%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.210407 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0117057 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |======================================================                |  78%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0168174 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.085396 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=======================================================               |  78%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.142583 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.33448 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.135715 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.307978 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=======================================================               |  79%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0173099 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.74396 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |========================================================              |  80%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00218055 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0325297 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0510043 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=========================================================             |  81%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0142477 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.132906 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=========================================================             |  82%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0463331 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.45834 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.384388 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 1.51369 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==========================================================            |  82%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.573235 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==========================================================            |  83%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0125365 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0139512 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==========================================================            |  84%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0370722 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.556827 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===========================================================           |  84%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0148882 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0634383 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0369569 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00798542 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |============================================================          |  85%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00295736 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |============================================================          |  86%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0397719 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.225609 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0607766 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00377885 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=============================================================         |  86%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.106727 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.163514 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=============================================================         |  87%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.518937 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=============================================================         |  88%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0872816 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==============================================================        |  88%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0259299 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.317589 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0328866 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==============================================================        |  89%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.846189 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 1.10659 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===============================================================       |  90%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0307417 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0381905 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00385755 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.267742 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 2.86968 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |================================================================      |  91%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.124964 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.482576 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |================================================================      |  92%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0408435 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0701324 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.140626 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=================================================================     |  92%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00529385 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.176053 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=================================================================     |  93%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.145302 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |=================================================================     |  94%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.01826 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==================================================================    |  94%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0130748 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.128888 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.312463 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0375144 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |==================================================================    |  95%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0240532 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===================================================================   |  96%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00280289 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.148291 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.26769 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.402028 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |====================================================================  |  96%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.13435 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.271287 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |====================================================================  |  97%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0189633 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |====================================================================  |  98%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.219433 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 1.04926 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===================================================================== |  98%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.178437 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.400518 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.446672 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 2.87905 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |===================================================================== |  99%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.124134 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.216076 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+##   |                                                                              |======================================================================| 100%
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.0154151 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.376393 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{## zero spurious (small) negative values}
+\NormalTok{nulldist[nulldist }\OperatorTok{<}\StringTok{ }\DecValTok{0} \OperatorTok{&}\StringTok{ }\KeywordTok{abs}\NormalTok{(nulldist) }\OperatorTok{<}\StringTok{ }\FloatTok{1e-5}\NormalTok{] <-}\StringTok{ }\DecValTok{0}
+\NormalTok{obsdev <-}\StringTok{ }\DecValTok{2} \OperatorTok{*}\StringTok{ }\KeywordTok{c}\NormalTok{(}\KeywordTok{logLik}\NormalTok{(mp4) }\OperatorTok{-}\StringTok{ }\KeywordTok{logLik}\NormalTok{(mp4v1))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mean}\NormalTok{(}\KeywordTok{c}\NormalTok{(nulldist, obsdev) }\OperatorTok{>=}\StringTok{ }\NormalTok{obsdev)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.01492537
+\end{verbatim}
+
+The true p-value is actually closer to 0.05 than 0.02. In other words, here the deviations from the original statistical model from that for which the original ``p value is inflated by 2'' rule of thumb was derived --- fitting a GLMM instead of a LMM, and using a moderate-sized rather than an arbitrarily large (asymptotic) data set --- have made the likelihood ratio test liberal (increased type I error) rather than conservative (decreased type I error).
+
+We can also inspect the random effects estimates themselves (in proper statistical jargon, these might be considered ``predictions'' rather than ``estimates'' (Robinson, 1991)). We use the built-in dotplot method for the random effects extracted from glmer fits (i.e.~ranef(model,condVar=TRUE)), which returns a list of plots, one for each random effect level in the model.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(lattice)}
+\NormalTok{pp <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}
+  \DataTypeTok{layout.widths =} \KeywordTok{list}\NormalTok{(}\DataTypeTok{left.padding =} \DecValTok{0}\NormalTok{, }\DataTypeTok{right.padding =} \DecValTok{0}\NormalTok{),}
+  \DataTypeTok{layout.heights =} \KeywordTok{list}\NormalTok{(}\DataTypeTok{top.padding =} \DecValTok{0}\NormalTok{, }\DataTypeTok{bottom.padding =} \DecValTok{0}\NormalTok{)}
+\NormalTok{)}
+\NormalTok{r1 <-}\StringTok{ }\KeywordTok{ranef}\NormalTok{(mp4, }\DataTypeTok{condVar =} \OtherTok{TRUE}\NormalTok{)}
+\NormalTok{d1 <-}\StringTok{ }\NormalTok{lattice}\OperatorTok{::}\KeywordTok{dotplot}\NormalTok{(r1, }\DataTypeTok{par.settings =}\NormalTok{ pp)}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{grid.arrange}\NormalTok{(d1}\OperatorTok{$}\NormalTok{gen, d1}\OperatorTok{$}\NormalTok{popu, }\DataTypeTok{nrow =} \DecValTok{1}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-41-1.pdf}
+
+\begin{verbatim}
+## TableGrob (1 x 2) "arrange": 2 grobs
+##   z     cells    name                       grob
+## 1 1 (1-1,1-1) arrange lattice[GRID.lattice.4255]
+## 2 2 (1-1,2-2) arrange lattice[GRID.lattice.4256]
+\end{verbatim}
+
+As expected from the similarity of the variance estimates, the population- level estimates (the only shared component) do not differ much between the two models. There is a hint of regional differentiation --- the Spanish populations have higher fruit sets than the Swedish and Dutch populations. Genotype 34 again looks a little bit unusual.
+
+\hypertarget{fixed-effects}{%
+\subsubsection{Fixed effects}\label{fixed-effects}}
+
+Now we want to do inference on the fixed effects. We use the drop1 func- tion to assess both the AIC difference and the likelihood ratio test between models. (In glmm\_funs.R we define a convenience function dfun to con- vert the AIC tables returned by drop1 (which we will create momentarily) into ∆AIC tables.) Although the likelihood ratio test (and the AIC) are asymptotic tests, comparing fits between full and reduced models is still more accurate than the Wald (curvature-based) tests shown in the summary tables for glmer fits.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(dd_AIC <-}\StringTok{ }\KeywordTok{dfun}\NormalTok{(}\KeywordTok{drop1}\NormalTok{(mp4)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00763683 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Single term deletions
+## 
+## Model:
+## total.fruits ~ nutrient + amd + rack + status + (1 | X) + (1 | 
+##     gen) + (1 | popu) + nutrient:amd
+##              npar   dAIC
+## <none>             0.000
+## rack            1 55.081
+## status          2  1.611
+## nutrient:amd    1  1.443
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(dd_LRT <-}\StringTok{ }\KeywordTok{drop1}\NormalTok{(mp4, }\DataTypeTok{test =} \StringTok{"Chisq"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00763683 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Single term deletions
+## 
+## Model:
+## total.fruits ~ nutrient + amd + rack + status + (1 | X) + (1 | 
+##     gen) + (1 | popu) + nutrient:amd
+##              npar    AIC    LRT   Pr(Chi)    
+## <none>            5015.4                     
+## rack            1 5070.5 57.081 4.182e-14 ***
+## status          2 5017.0  5.611   0.06047 .  
+## nutrient:amd    1 5016.8  3.443   0.06353 .  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+On the basis of these comparisons, there appears to be a very strong effect of rack and weak effects of status and of the interaction term. Dropping the nutrient:amd interaction gives a (slightly) increased AIC (∆AIC = 1.4), so the full model has the best expected predictive capability (by a small margin). On the other hand, the p-value is slightly above 0.05 (p = 0.06). At this point we remove the non-significant interaction term so we can test the main effects. (We don't worry about removing status because it measures an aspect of experimental design that we want to leave in the model whether it is significant or not.) Once we have fitted the reduced model, we can run the LRT via anova.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mp5 <-}\StringTok{ }\KeywordTok{update}\NormalTok{(mp4, . }\OperatorTok{~}\StringTok{ }\NormalTok{. }\OperatorTok{-}\StringTok{ }\NormalTok{amd}\OperatorTok{:}\NormalTok{nutrient)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+## Model failed to converge with max|grad| = 0.00763683 (tol = 0.002, component 1)
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{anova}\NormalTok{(mp5, mp4)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Data: dat_tf
+## Models:
+## mp5: total.fruits ~ nutrient + amd + rack + status + (1 | X) + (1 | 
+## mp5:     gen) + (1 | popu)
+## mp4: total.fruits ~ nutrient + amd + rack + status + (1 | X) + (1 | 
+## mp4:     gen) + (1 | popu) + nutrient:amd
+##     npar    AIC    BIC  logLik deviance  Chisq Df Pr(>Chisq)  
+## mp5    9 5016.8 5056.8 -2499.4   4998.8                       
+## mp4   10 5015.4 5059.8 -2497.7   4995.4 3.4427  1    0.06353 .
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+\textbf{Exercise}
+Test now the reduced model.
+
+In the reduced model, we find that both nutrients and clipping have strong effects, whether measured by AIC or LRT. If we wanted to be still more careful about our interpretation, we would try to relax the asymptotic assumption. In classical linear models, we would do this by doing F tests with the appropriate denominator degrees of freedom. In ``modern'' mixed model approaches, we might try to use denominator-degree-of-freedom approximations such as the Kenward-Roger (despite the controversy over these approximations, they are actually available in \texttt{lmerTest}, but they do not apply to GLMMs. We can use a parametric bootstrap comparison between nested models to test fixed effects, as we did above for random effects, with the caveat that is computationally slow.
+
+In addition, we can check the normality of the random effects and find they are reasonable (Fig. 10). We use ldply from the reshape package to collapse the list of random effect values into a data frame (we might have to do something different if there were more than one random effect within each level, e.g.~a model including (nutrient\textbar gen)). The fancy panel code in the figure adds a reference line to the Q-Q plot.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{reStack <-}\StringTok{ }\NormalTok{plyr}\OperatorTok{::}\KeywordTok{ldply}\NormalTok{(}\KeywordTok{ranef}\NormalTok{(mp5))}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{qqmath}\NormalTok{(}\OperatorTok{~}\StringTok{ `}\DataTypeTok{(Intercept)}\StringTok{`} \OperatorTok{|}\StringTok{ }\NormalTok{.id,}
+  \DataTypeTok{data =}\NormalTok{ reStack, }\DataTypeTok{scales =} \KeywordTok{list}\NormalTok{(}\DataTypeTok{relation =} \StringTok{"free"}\NormalTok{),}
+  \DataTypeTok{prepanel =}\NormalTok{ prepanel.qqmathline,}
+  \DataTypeTok{panel =} \ControlFlowTok{function}\NormalTok{(x, ...) \{}
+    \KeywordTok{panel.qqmathline}\NormalTok{(x, ...)}
+    \KeywordTok{panel.qqmath}\NormalTok{(x, ...)}
+\NormalTok{  \},}
+  \DataTypeTok{layout =} \KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-44-1.pdf}
+
+\hypertarget{conclusions}{%
+\chapter{Conclusions}\label{conclusions}}
+
+Our final model includes fixed effects of nutrients and clipping, as well as the nuisance variables rack and status; observation-level random effects to ac- count for overdispersion; and variation in overall fruit set at the population and genotype levels. However, we don't (apparently) have quite enough in- formation to estimate the variation in clipping and nutrient effects, or their interaction, at the genotype or population levels. There is a strong overall positive effect of nutrients and a slightly weaker negative effect of clipping. The interaction between clipping and nutrients is only weakly supported (i.e.~the p-value is not very small), but it is positive and about the same magnitude as the clipping effect, which is consistent with the statement that ``nutrients cancel out the effect of herbivory''.
+
+\textbf{Exercise}
+
+\begin{itemize}
+\tightlist
+\item
+  Re-do the analysis with region as a fixed effect.
+\item
+  Re-do the analysis with a one-way layout as suggested above
+\end{itemize}
 
 \hypertarget{part-appendix}{%
 \part{Appendix}\label{part-appendix}}
@@ -972,6 +4103,26 @@ Test pour montrer la solution
 \hypertarget{r-1}{%
 \chapter*{R}\label{r-1}}
 \addcontentsline{toc}{chapter}{R}
+
+Need to write something about R
+
+\hypertarget{to-do-list}{%
+\chapter*{To do list}\label{to-do-list}}
+\addcontentsline{toc}{chapter}{To do list}
+
+\begin{itemize}
+\tightlist
+\item
+  clean code
+\item
+  add more info about allEffects and plotting prediction of models
+\item
+  convert all plots to ggplot
+\item
+  convert data handling to tidyverse
+\item
+  finish chapters
+\end{itemize}
 
   \bibliography{book.bib,packages.bib}
 
