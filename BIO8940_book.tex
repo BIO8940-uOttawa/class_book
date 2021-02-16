@@ -5,8 +5,8 @@
 \documentclass[
   12pt,
 ]{book}
-\usepackage{amsmath,amssymb}
 \usepackage{lmodern}
+\usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
@@ -82,8 +82,7 @@
 \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
 \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
 \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\usepackage{longtable,booktabs,array}
-\usepackage{calc} % for calculating minipage widths
+\usepackage{longtable,booktabs}
 % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
 \makeatletter
@@ -92,7 +91,7 @@
 % Allow footnotes in longtable head/foot
 \IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
 \makesavenoteenv{longtable}
-\usepackage{graphicx}
+\usepackage{graphicx,grffile}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
 \def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
@@ -228,9 +227,6 @@
 \makeatother
 
 % \frontmatter
-\ifluatex
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
 \usepackage[]{natbib}
 \bibliographystyle{apalike}
 
@@ -416,7 +412,7 @@ Ces 2 paquets devrait être installé automatiquement avec RStudio, mais pas tou
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{install.packages}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"rmarkdown"}\NormalTok{, }\StringTok{"tinytex"}\NormalTok{))}
+\KeywordTok{install.packages}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"rmarkdown"}\NormalTok{, }\StringTok{"tinytex"}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -517,8 +513,222 @@ Ce document est mis à disposition selon les termes de la \href{http://creativec
 \hypertarget{introduction-to-rmarkdown}{%
 \chapter{Introduction to Rmarkdown}\label{introduction-to-rmarkdown}}
 
+\hypertarget{practical}{%
+\section{Practical}\label{practical}}
+
+\hypertarget{context}{%
+\subsection{Context}\label{context}}
+
+Let's apply what we have learnt in the course on \textbf{Writing dynamic and reproducible documents - An introduction to R Markdown}
+
+We will use the awesome \texttt{palmerpenguins} dataset 🐧, an alternative to Fisher's \texttt{iris} dataset, to explore and visualize data.
+
+These data have been collected and shared by \href{https://www.uaf.edu/cfos/people/faculty/detail/kristen-gorman.php}{Dr.~Kristen Gorman} and \href{https://pal.lternet.edu/}{Palmer Station, Antarctica LTER}.
+
+The package was built by Drs Allison Horst and Alison Hill, check out the \href{https://allisonhorst.github.io/palmerpenguins/}{official website}.
+
+The package \texttt{palmerpenguins} has two datasets.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(palmerpenguins)}
+\end{Highlighting}
+\end{Shaded}
+
+The dataset \texttt{penguins} is a simplified version of the raw data; see \texttt{?penguins} for more info:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{head}\NormalTok{(penguins)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 8
+##   species island bill_length_mm bill_depth_mm flipper_length_~ body_mass_g sex  
+##   <fct>   <fct>           <dbl>         <dbl>            <int>       <int> <fct>
+## 1 Adelie  Torge~           39.1          18.7              181        3750 male 
+## 2 Adelie  Torge~           39.5          17.4              186        3800 fema~
+## 3 Adelie  Torge~           40.3          18                195        3250 fema~
+## 4 Adelie  Torge~           NA            NA                 NA          NA <NA> 
+## 5 Adelie  Torge~           36.7          19.3              193        3450 fema~
+## 6 Adelie  Torge~           39.3          20.6              190        3650 male 
+## # ... with 1 more variable: year <int>
+\end{verbatim}
+
+The other dataset \texttt{penguins\_raw} has the raw data; see \texttt{?penguins\_raw} for more info:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{head}\NormalTok{(penguins_raw)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 17
+##   studyName `Sample Number` Species Region Island Stage `Individual ID`
+##   <chr>               <dbl> <chr>   <chr>  <chr>  <chr> <chr>          
+## 1 PAL0708                 1 Adelie~ Anvers Torge~ Adul~ N1A1           
+## 2 PAL0708                 2 Adelie~ Anvers Torge~ Adul~ N1A2           
+## 3 PAL0708                 3 Adelie~ Anvers Torge~ Adul~ N2A1           
+## 4 PAL0708                 4 Adelie~ Anvers Torge~ Adul~ N2A2           
+## 5 PAL0708                 5 Adelie~ Anvers Torge~ Adul~ N3A1           
+## 6 PAL0708                 6 Adelie~ Anvers Torge~ Adul~ N3A2           
+## # ... with 10 more variables: `Clutch Completion` <chr>, `Date Egg` <date>,
+## #   `Culmen Length (mm)` <dbl>, `Culmen Depth (mm)` <dbl>, `Flipper Length
+## #   (mm)` <dbl>, `Body Mass (g)` <dbl>, Sex <chr>, `Delta 15 N (o/oo)` <dbl>,
+## #   `Delta 13 C (o/oo)` <dbl>, Comments <chr>
+\end{verbatim}
+
+For this exercise, we're gonna use the \texttt{penguins} dataset.
+
+\hypertarget{questions}{%
+\subsection{Questions}\label{questions}}
+
+\textbf{1)} Install the package \texttt{palmerpenguins}.
+
+\textbf{2)} Create a new R Markdown document, name it and save it. Delete everything after line 12. Add a new section title, simple text and text in bold font. Compile (``Knit'').
+
+\textbf{3)} Add a chunk in which you load the \texttt{palmerpenguins}. The corresponding line of code should be hidden in the output. Load also the \texttt{tidyverse} suite of packages. Modify the defaults to suppress all messages.
+
+\textbf{4)} Add another chunk in which you build a table with the 10 first rows of the dataset.
+
+\textbf{5)} In a new section, display how many individuals, penguins species and islands we have in the dataset. This info should appear directly in the text, you need to use inline code 😄. Calculate the mean of the (numeric) traits measured on the penguins.
+
+\textbf{6)} In another section, entitled `Graphical exploration', build a figure with 3 superimposed histograms, each one corresponding to the body mass of a species.
+
+\textbf{7)} In another section, entitled `Linear regression', fit a model of bill length as a function of body size (flipper length), body mass and sex. Obtain the output and graphically evaluate the assumptions of the model.
+
+\textbf{8)} Add references manually or using \texttt{citr} in \texttt{RStudio}.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Pick a recent publication from the researcher who shared the data, Dr Kristen Gorman. Import this publication in your favorite references manager (we use Zotero, no hard feeling), and create a bibtex reference that you will add to to the file \texttt{mabiblio.bib}.
+\item
+  Add \texttt{bibliography:\ mabiblio.bib} at the beginning of your R Markdown document (YAML).
+\item
+  Cite the reference iin the text using either typing the reference manually or using \texttt{citr}. To use \texttt{citr}, instal it first; if everything goes well, you should see it in the pulldown menu \texttt{Addins} 💪. Then simply use \texttt{Insert\ citations} in the pull-down menu \texttt{Addins}.
+\item
+  Compile.
+\end{enumerate}
+
+\textbf{9)} Change the default citation format (Chicago style) into the The American Naturalist format. It can be found here \url{https://www.zotero.org/styles}. To do soo, add \texttt{csl:\ the-american-naturalist.csl} in the YAML.
+
+\textbf{10)} Build your report in html, pdf and docx format. 🎉
+
+\hypertarget{happy-coding}{%
+\subsection{Happy coding}\label{happy-coding}}
+
+\includegraphics{images/lter_penguins.png}
+
 \hypertarget{introduction-to-github-with-r}{%
 \chapter{Introduction to github with R}\label{introduction-to-github-with-r}}
+
+\hypertarget{practical-1}{%
+\section{Practical}\label{practical-1}}
+
+\hypertarget{context-1}{%
+\subsection{Context}\label{context-1}}
+
+We will configure Rstudio to work with our github account, then create a new project and start using \texttt{github}. To have some data I suggest to use the awesome \texttt{palmerpenguins} dataset 🐧.
+
+\hypertarget{information-of-the-data}{%
+\subsection{Information of the data}\label{information-of-the-data}}
+
+These data have been collected and shared by \href{https://www.uaf.edu/cfos/people/faculty/detail/kristen-gorman.php}{Dr.~Kristen Gorman} and \href{https://pal.lternet.edu/}{Palmer Station, Antarctica LTER}.
+
+The package was built by Drs Allison Horst and Alison Hill, check out the \href{https://allisonhorst.github.io/palmerpenguins/}{official website}.
+
+The package \texttt{palmerpenguins} has two datasets.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(palmerpenguins)}
+\end{Highlighting}
+\end{Shaded}
+
+The dataset \texttt{penguins} is a simplified version of the raw data; see \texttt{?penguins} for more info:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{head}\NormalTok{(penguins)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 8
+##   species island bill_length_mm bill_depth_mm flipper_length_~ body_mass_g sex  
+##   <fct>   <fct>           <dbl>         <dbl>            <int>       <int> <fct>
+## 1 Adelie  Torge~           39.1          18.7              181        3750 male 
+## 2 Adelie  Torge~           39.5          17.4              186        3800 fema~
+## 3 Adelie  Torge~           40.3          18                195        3250 fema~
+## 4 Adelie  Torge~           NA            NA                 NA          NA <NA> 
+## 5 Adelie  Torge~           36.7          19.3              193        3450 fema~
+## 6 Adelie  Torge~           39.3          20.6              190        3650 male 
+## # ... with 1 more variable: year <int>
+\end{verbatim}
+
+The other dataset \texttt{penguins\_raw} has the raw data; see \texttt{?penguins\_raw} for more info:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{head}\NormalTok{(penguins_raw)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 17
+##   studyName `Sample Number` Species Region Island Stage `Individual ID`
+##   <chr>               <dbl> <chr>   <chr>  <chr>  <chr> <chr>          
+## 1 PAL0708                 1 Adelie~ Anvers Torge~ Adul~ N1A1           
+## 2 PAL0708                 2 Adelie~ Anvers Torge~ Adul~ N1A2           
+## 3 PAL0708                 3 Adelie~ Anvers Torge~ Adul~ N2A1           
+## 4 PAL0708                 4 Adelie~ Anvers Torge~ Adul~ N2A2           
+## 5 PAL0708                 5 Adelie~ Anvers Torge~ Adul~ N3A1           
+## 6 PAL0708                 6 Adelie~ Anvers Torge~ Adul~ N3A2           
+## # ... with 10 more variables: `Clutch Completion` <chr>, `Date Egg` <date>,
+## #   `Culmen Length (mm)` <dbl>, `Culmen Depth (mm)` <dbl>, `Flipper Length
+## #   (mm)` <dbl>, `Body Mass (g)` <dbl>, Sex <chr>, `Delta 15 N (o/oo)` <dbl>,
+## #   `Delta 13 C (o/oo)` <dbl>, Comments <chr>
+\end{verbatim}
+
+For this exercise, we're gonna use the \texttt{penguins} dataset.
+
+\hypertarget{questions-1}{%
+\subsection{Questions}\label{questions-1}}
+
+\textbf{1)} Create a github acocunt if not done yet.
+
+\textbf{2)} Configure Rstudio with your github account using the \texttt{usethis} package.
+
+\textbf{3)} Store your GITHUB Personal Authorisation Token in your .Renviron file
+
+\textbf{4)} Create a new R Markdown project, and create a new git repository
+
+\textbf{5)} Create a new Rmarkdon document, in your project. Then save the file and stage it.
+
+\textbf{6)} Create a new commit including the new file and push it to github (Check on github that it works).
+
+\textbf{7)} Edit the file. Delete everything after line 12. Add a new section title, simple text and text in bold font. Then knit and compile.
+
+\textbf{8)} Make a new commit (with a meaningful message), and push to github.
+
+\textbf{9)} Create a new branch, and add a new section to the rmarkdown file in this branch. Whatever you want. I would suggest a graph of the data.
+
+\textbf{10)} Creat a commit and push it to the branch.
+
+\textbf{11)} On github, create a pull request to merge the 2 different branches.
+
+\textbf{12)} Check and accep the pull request to merge the 2 branches.
+
+You have successfully used all the essential tools of \texttt{git} 🎉 . You are really to explore 🕵 and discover its power 💪
+
+\hypertarget{happy-github-ing}{%
+\subsection{Happy git(hub)-ing}\label{happy-github-ing}}
+
+\begin{center}\includegraphics[width=0.2\linewidth]{images/github_ninja} \end{center}
 
 \hypertarget{part-statistics}{%
 \part{Statistics}\label{part-statistics}}
@@ -528,7 +738,7 @@ Ce document est mis à disposition selon les termes de la \href{http://creativec
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{m1 }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(fish }\SpecialCharTok{\textasciitilde{}}\NormalTok{ french\_captain, }\AttributeTok{data =}\NormalTok{ dads\_joke, }\AttributeTok{family =}\NormalTok{ poisson)}
+\NormalTok{m1 <-}\StringTok{ }\KeywordTok{glm}\NormalTok{(fish }\OperatorTok{~}\StringTok{ }\NormalTok{french_captain, }\DataTypeTok{data =}\NormalTok{ dads_joke, }\DataTypeTok{family =}\NormalTok{ poisson)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -538,9 +748,9 @@ On a relevé les notes en maths, anglais et sport d'une classe de 6 élèves et 
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{maths }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{12}\NormalTok{, }\DecValTok{16}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{18}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{10}\NormalTok{)}
-\NormalTok{anglais }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{14}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{13}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{17}\NormalTok{, }\DecValTok{11}\NormalTok{)}
-\NormalTok{sport }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{18}\NormalTok{, }\DecValTok{11}\NormalTok{, }\DecValTok{14}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{12}\NormalTok{)}
+\NormalTok{maths <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{12}\NormalTok{, }\DecValTok{16}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{18}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{10}\NormalTok{)}
+\NormalTok{anglais <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{14}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{13}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{17}\NormalTok{, }\DecValTok{11}\NormalTok{)}
+\NormalTok{sport <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{18}\NormalTok{, }\DecValTok{11}\NormalTok{, }\DecValTok{14}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{12}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -562,9 +772,9 @@ On a relevé les notes en maths, anglais et sport d'une classe de 6 élèves et 
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{maths }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{12}\NormalTok{, }\DecValTok{16}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{18}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{10}\NormalTok{)}
-\NormalTok{anglais }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{14}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{13}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{17}\NormalTok{, }\DecValTok{11}\NormalTok{)}
-\NormalTok{sport }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{18}\NormalTok{, }\DecValTok{11}\NormalTok{, }\DecValTok{14}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{12}\NormalTok{)}
+\NormalTok{maths <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{12}\NormalTok{, }\DecValTok{16}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{18}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{10}\NormalTok{)}
+\NormalTok{anglais <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{14}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{13}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{17}\NormalTok{, }\DecValTok{11}\NormalTok{)}
+\NormalTok{sport <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{18}\NormalTok{, }\DecValTok{11}\NormalTok{, }\DecValTok{14}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{12}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -582,75 +792,123 @@ Test pour montrer la solution
 ## [1] 14.66667 12.00000 11.66667 14.33333 10.33333 11.00000
 \end{verbatim}
 
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-13-1.pdf}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-14-1.pdf}
 
 \hypertarget{refresher-on-glm-1}{%
 \chapter{\texorpdfstring{Refresher on \texttt{glm}}{Refresher on glm}}\label{refresher-on-glm-1}}
 
+\hypertarget{practical-2}{%
+\section{Practical}\label{practical-2}}
+
+\hypertarget{the-superb-wild-unicorns-of-the-scottish-highlands}{%
+\subsection{The superb wild unicorns of the Scottish Highlands}\label{the-superb-wild-unicorns-of-the-scottish-highlands}}
+
+Unicorns, a legendary animal and also symbol or Scotland, are frequently described as extremely wild woodland creature but also a symbol of purity and grace. Here is one of most accurate representation of the lengendary animal.
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.5\linewidth]{images/unicorn} 
+
+}
+
+\caption{The superb unicorn of the Scottish Highlands}\label{fig:unnamed-chunk-15}
+\end{figure}
+
+Despite their image of purity and grace, unicorns (\emph{Unicornus legendaricus}) are raging fighter when it comes to compete for the best sweets you can find at the bottom of rainbows (unicorn favourite source of food).
+
+We want to know:
+
+\begin{itemize}
+\tightlist
+\item
+  If aggressiveness differs among individuals
+\item
+  If aggressive behaviour is plastic (change with the environment)
+\item
+  If aggressive behaviour depends on body condition of focal animal
+\end{itemize}
+
+With respect to plasticity, we will focus on rival size as an `environment'. Common sense, and animal-contest theory, suggest a small animal would be wise not to escalate an aggressive contest against a larger, stronger rival. However, there are reports in the legendary beasty literature that they get more aggressive as rival size increases. Those reports are based on small sample sizes and uncontrolled field observations by Munro baggers enjoying their whisky after a long day in the hills.
+
+\hypertarget{experimental-design---what-is-the-structure-of-the-data-we-have}{%
+\subsubsection{Experimental design - what is the structure of the data we have?}\label{experimental-design---what-is-the-structure-of-the-data-we-have}}
+
+Here, we have measured aggression in a population of wild unicorns. We brought some (n=80) individual into the lab, tagged them so they were individually identifiable, then repeatedly observed their aggression when presented with model `intruders' (animal care committe approved). There were three models; one of average unicorn (calculated as the population mean body length), one that was build to be 1 standard deviation below the population mean, and one that was 1 standard deviation above.
+
+Data were collected on all individuals in two block of lab work. Within each block, each animal was tested 3 times, once against an `intruder' of each size. The test order in which each male experienced the three instruder sizes was randomised in each block. The body size of all focal individuals was measured at the beginning of each block so we know that too (and have two separate measures per individual).
+
+\hypertarget{data}{%
+\subsubsection{Data}\label{data}}
+
+Let's load the data file and make sure we understand what it contains
+
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{m1 }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(fish }\SpecialCharTok{\textasciitilde{}}\NormalTok{ french\_captain, }\AttributeTok{data=}\NormalTok{ dads\_joke, }\AttributeTok{family =}\NormalTok{ poisson)}
+\NormalTok{unicorns <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"data/unicorns_aggression.csv"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\textbf{Exercice 5}
+You can use \texttt{summary(unicorns)} to get an overview of the data and/or \texttt{head(unicorns)} to see the structure in the first few lines. This data frame has 6 variables:
 
-On a relevé les notes en maths, anglais et sport d'une classe de 6 élèves et on a stocké ces données dans trois vecteurs :
+\begin{itemize}
+\tightlist
+\item
+  Individual \textbf{ID}
+\item
+  Experimental \textbf{Block}, denoted for now as a continuous variable with possible values of -0.5 (first block) or +0.5 (second block)
+\item
+  Individual \textbf{body\_size}, as measured at the start of each block in kg
+\item
+  The repeat number for each behavioural test, \textbf{assay\_rep}
+\item
+  Opponent size (\textbf{opp\_size}), in standard deviations from the mean (i.e., -1,0,1)
+\item
+  \textbf{aggression}, our behavioural trait, measured 6 times in total per individual (2 blocks of 3 tests)
+\end{itemize}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{maths }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{12}\NormalTok{, }\DecValTok{16}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{18}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{10}\NormalTok{)}
-\NormalTok{anglais }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{14}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{13}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{17}\NormalTok{, }\DecValTok{11}\NormalTok{)}
-\NormalTok{sport }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{18}\NormalTok{, }\DecValTok{11}\NormalTok{, }\DecValTok{14}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{12}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
+\hypertarget{questions-2}{%
+\subsection{Questions}\label{questions-2}}
 
-Calculer la moyenne des élèves de la classe en anglais.
+\textbf{1)} Load the libraries (\texttt{lme4})
 
-Calculer la moyenne générale de chaque élève.
+\textbf{2)} Load the data \texttt{unicorns.csv} and look at the summary and data structure
 
-\begin{verbatim}
-## [1] 13.16667
-\end{verbatim}
+\textbf{3)} Fit a first mixed model with \texttt{lmer} that have only individual identity as a random effect and only a population mean.
 
-\begin{verbatim}
-## [1] 14.66667 12.00000 11.66667 14.33333 10.33333 11.00000
-\end{verbatim}
+\textbf{4)} Look at the output of the model (\emph{summary()})
 
-\textbf{Exercice 5}
+\textbf{5)} This is a fairly rubbish model so now fit a better model by adding opponent size (\emph{opp\_size}) and block (\emph{block}) as fixed effects. Look at the output of the model (\emph{summary()})
 
-On a relevé les notes en maths, anglais et sport d'une classe de 6 élèves et on a stocké ces données dans trois vecteurs :
+\textbf{6)} Where are the \textbf{p-values} ? what I have done wrong. Load \texttt{lmerTest} and refit the model using the exact same code. Look at the summary again.
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{maths }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{12}\NormalTok{, }\DecValTok{16}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{18}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{10}\NormalTok{)}
-\NormalTok{anglais }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{14}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{13}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{17}\NormalTok{, }\DecValTok{11}\NormalTok{)}
-\NormalTok{sport }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{18}\NormalTok{, }\DecValTok{11}\NormalTok{, }\DecValTok{14}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{12}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
+\textbf{7)} Testing for random effects using \texttt{ranova()}. You can also do it by hand if you want.
 
-Calculer la moyenne des élèves de la classe en anglais.
+\textbf{8)} Estimate repeatability, either by hand or using the \texttt{rpt} package
 
-Calculer la moyenne générale de chaque élève.
+\textbf{9)} Now what about the effect on an individual body size on its aggression. Do a new model including body size also as a fixed effects. Look at the model output, estimate the probability associated witht eh random effects.
 
-Test pour montrer la solution
+\textbf{10)} Make a few diagnostic plots before you can get to excited by your results (\emph{homoscedasticity}, \emph{Gaussian distribution for residuals}, \emph{linear relation}, \emph{similar within group variance} )
 
-\begin{verbatim}
-## [1] 13.16667
-\end{verbatim}
+\textbf{11)} Compare repeatability among different models.
 
-\begin{verbatim}
-## [1] 14.66667 12.00000 11.66667 14.33333 10.33333 11.00000
-\end{verbatim}
+\hypertarget{happy-mixed-modelling}{%
+\subsection{Happy mixed-modelling}\label{happy-mixed-modelling}}
 
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-18-1.pdf}
+\begin{figure}
+
+{\centering \includegraphics[width=0.2\linewidth]{images/unicorn} 
+
+}
+
+\caption{The superb unicorn}\label{fig:unnamed-chunk-16}
+\end{figure}
 
 \hypertarget{refresher-on-glm-2}{%
 \chapter{\texorpdfstring{Refresher on \texttt{glm}}{Refresher on glm}}\label{refresher-on-glm-2}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{m1 }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(fish }\SpecialCharTok{\textasciitilde{}}\NormalTok{ french\_captain, }\AttributeTok{data=}\NormalTok{ dads\_joke, }\AttributeTok{family =}\NormalTok{ poisson)}
+\NormalTok{m1 <-}\StringTok{ }\KeywordTok{glm}\NormalTok{(fish }\OperatorTok{~}\StringTok{ }\NormalTok{french_captain, }\DataTypeTok{data=}\NormalTok{ dads_joke, }\DataTypeTok{family =}\NormalTok{ poisson)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -660,9 +918,9 @@ On a relevé les notes en maths, anglais et sport d'une classe de 6 élèves et 
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{maths }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{12}\NormalTok{, }\DecValTok{16}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{18}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{10}\NormalTok{)}
-\NormalTok{anglais }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{14}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{13}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{17}\NormalTok{, }\DecValTok{11}\NormalTok{)}
-\NormalTok{sport }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{18}\NormalTok{, }\DecValTok{11}\NormalTok{, }\DecValTok{14}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{12}\NormalTok{)}
+\NormalTok{maths <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{12}\NormalTok{, }\DecValTok{16}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{18}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{10}\NormalTok{)}
+\NormalTok{anglais <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{14}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{13}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{17}\NormalTok{, }\DecValTok{11}\NormalTok{)}
+\NormalTok{sport <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{18}\NormalTok{, }\DecValTok{11}\NormalTok{, }\DecValTok{14}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{12}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -684,9 +942,9 @@ On a relevé les notes en maths, anglais et sport d'une classe de 6 élèves et 
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{maths }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{12}\NormalTok{, }\DecValTok{16}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{18}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{10}\NormalTok{)}
-\NormalTok{anglais }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{14}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{13}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{17}\NormalTok{, }\DecValTok{11}\NormalTok{)}
-\NormalTok{sport }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{18}\NormalTok{, }\DecValTok{11}\NormalTok{, }\DecValTok{14}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{12}\NormalTok{)}
+\NormalTok{maths <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{12}\NormalTok{, }\DecValTok{16}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{18}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{10}\NormalTok{)}
+\NormalTok{anglais <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{14}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{13}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{17}\NormalTok{, }\DecValTok{11}\NormalTok{)}
+\NormalTok{sport <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{18}\NormalTok{, }\DecValTok{11}\NormalTok{, }\DecValTok{14}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{12}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -704,7 +962,9 @@ Test pour montrer la solution
 ## [1] 14.66667 12.00000 11.66667 14.33333 10.33333 11.00000
 \end{verbatim}
 
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-23-1.pdf}
+\begin{center}\includegraphics[width=0.2\linewidth]{BIO8940_book_files/figure-latex/unnamed-chunk-21-1} \end{center}
+
+\begin{center}\includegraphics[width=0.2\linewidth]{images/unicorn} \end{center}
 
 \hypertarget{part-appendix}{%
 \part{Appendix}\label{part-appendix}}

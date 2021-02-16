@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Quelques points importants à retenir | BIO8940 Advanced stats and Open Science</title>
+  <title>3.1 Practical | BIO8940 Advanced stats and Open Science</title>
   <meta name="description" content="Theory and practicals for BIO8940 course at the University of Ottawa" />
   <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Quelques points importants à retenir | BIO8940 Advanced stats and Open Science" />
+  <meta property="og:title" content="3.1 Practical | BIO8940 Advanced stats and Open Science" />
   <meta property="og:type" content="book" />
   
   <meta property="og:image" content="images/missing.png" />
@@ -16,7 +16,7 @@
   <meta name="github-repo" content="BIO8940-uOttawa/class_book" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Quelques points importants à retenir | BIO8940 Advanced stats and Open Science" />
+  <meta name="twitter:title" content="3.1 Practical | BIO8940 Advanced stats and Open Science" />
   
   <meta name="twitter:description" content="Theory and practicals for BIO8940 course at the University of Ottawa" />
   <meta name="twitter:image" content="images/missing.png" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="préface.html"/>
-<link rel="next" href="quest-ce-que-r-et-pourquoi-lutiliser-dans-ce-cours.html"/>
+<link rel="prev" href="introduction-to-github-with-r.html"/>
+<link rel="next" href="refresher-on-glm.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -199,49 +199,81 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="quelques-points-importants-à-retenir" class="section level2 unnumbered">
-<h2>Quelques points importants à retenir</h2>
-<ul>
-<li><p>Avant de commencer une analyse statistique, il faut d’abord vous familiariser son fonctionnement.
-Cela ne veut pas dire que vous devez connaître les outils mathématiques qui la sous-tendent, mais vous devriez au moins comprendre les principes utilisés lors de cette analyse.
-Avant de faire un exercice de laboratoire, lisez donc la section correspondante dans les notes de cours.
-Sans cette lecture préalable, il est très probable que les résultats produits par le logiciel, même si l’analyse a été effectuée correctement, seront indéchiffrables.</p></li>
-<li><p>Les laboratoires sont conçus pour compléter les cours théoriques et vice versa.
-À cause des contraintes d’horaires, il se pourrait que le cours et le laboratoire ne soient pas parfaitement synchronisés.
-N’hésitez donc pas à poser des questions sur le labo en classe ou des questions théoriques au laboratoire.</p></li>
-<li><p>Travaillez sur les exercices de laboratoire à votre propre rythme.
-Certains exercices prennent beaucoup moins de temps que d’autres et il n’est pas nécessaire de compléter un exercice par séance de laboratoire.
-En fait deux séances de laboratoire sont prévues pour certains des exercices.
-Même si vous n’êtes pas notés sur les exercices de laboratoire, soyez conscient que ces exercices
-sont essentiels.
-Si vous ne les faites pas, il est très peu probable que vous serez capable de compléter les devoirs et le projet de session.
-Prenez donc ces exercices de laboratoire au sérieux !</p></li>
-<li><p>Les 2 premier laboratoires sont conçu pour vous permettre d’acquérir ou de réviser le minimum de connaissances requises pour vous permettre de réaliser les exercices de laboratoires avec R.
-Il y a presque toujours de multiples façons de faire les choses avec R et vous ne trouverez ici que des méthodes simples.
-Ceux et celles d’entre vous qui y sont enclins pourront trouver en ligne des instructions plus détaillées et complexes.
-En particulier, je vous conseille :</p>
-<ul>
-<li>R pour les débutants
-<a href="http://cran.r-project.org/doc/contrib/Paradis-rdebuts_fr.pdf" class="uri">http://cran.r-project.org/doc/contrib/Paradis-rdebuts_fr.pdf</a></li>
-<li>An introduction to R
-<a href="http://cran.r-project.org/doc/manuals/R-intro.html" class="uri">http://cran.r-project.org/doc/manuals/R-intro.html</a></li>
-<li>Si vous préférez des manuels, le site web de CRAN en garde une liste commentée à :
-<a href="http://www.r-project.org/doc/bib/R-books.html" class="uri">http://www.r-project.org/doc/bib/R-books.html</a></li>
-<li>Une liste impressionnante de très bon livre sur R
-<a href="https://www.bigbookofr.com/" class="uri">https://www.bigbookofr.com/</a></li>
-<li>Finalement, comme aide-mémoire à garder sous la main, je vous recommande R reference card par Tom Short
-<a href="http://cran.r-project.org/doc/contrib/Short-refcard.pdf" class="uri">http://cran.r-project.org/doc/contrib/Short-refcard.pdf</a></li>
-</ul></li>
-</ul>
+<div id="practical-1" class="section level2">
+<h2><span class="header-section-number">3.1</span> Practical</h2>
+<div id="context-1" class="section level3">
+<h3><span class="header-section-number">3.1.1</span> Context</h3>
+<p>We will configure Rstudio to work with our github account, then create a new project and start using <code>github</code>. To have some data I suggest to use the awesome <code>palmerpenguins</code> dataset 🐧.</p>
 </div>
+<div id="information-of-the-data" class="section level3">
+<h3><span class="header-section-number">3.1.2</span> Information of the data</h3>
+<p>These data have been collected and shared by <a href="https://www.uaf.edu/cfos/people/faculty/detail/kristen-gorman.php">Dr. Kristen Gorman</a> and <a href="https://pal.lternet.edu/">Palmer Station, Antarctica LTER</a>.</p>
+<p>The package was built by Drs Allison Horst and Alison Hill, check out the <a href="https://allisonhorst.github.io/palmerpenguins/">official website</a>.</p>
+<p>The package <code>palmerpenguins</code> has two datasets.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="practical-1.html#cb7-1"></a><span class="kw">library</span>(palmerpenguins)</span></code></pre></div>
+<p>The dataset <code>penguins</code> is a simplified version of the raw data; see <code>?penguins</code> for more info:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="practical-1.html#cb8-1"></a><span class="kw">head</span>(penguins)</span></code></pre></div>
+<pre><code>## # A tibble: 6 x 8
+##   species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g sex  
+##   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt; &lt;fct&gt;
+## 1 Adelie  Torge…           39.1          18.7              181        3750 male 
+## 2 Adelie  Torge…           39.5          17.4              186        3800 fema…
+## 3 Adelie  Torge…           40.3          18                195        3250 fema…
+## 4 Adelie  Torge…           NA            NA                 NA          NA &lt;NA&gt; 
+## 5 Adelie  Torge…           36.7          19.3              193        3450 fema…
+## 6 Adelie  Torge…           39.3          20.6              190        3650 male 
+## # … with 1 more variable: year &lt;int&gt;</code></pre>
+<p>The other dataset <code>penguins_raw</code> has the raw data; see <code>?penguins_raw</code> for more info:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="practical-1.html#cb10-1"></a><span class="kw">head</span>(penguins_raw)</span></code></pre></div>
+<pre><code>## # A tibble: 6 x 17
+##   studyName `Sample Number` Species Region Island Stage `Individual ID`
+##   &lt;chr&gt;               &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;          
+## 1 PAL0708                 1 Adelie… Anvers Torge… Adul… N1A1           
+## 2 PAL0708                 2 Adelie… Anvers Torge… Adul… N1A2           
+## 3 PAL0708                 3 Adelie… Anvers Torge… Adul… N2A1           
+## 4 PAL0708                 4 Adelie… Anvers Torge… Adul… N2A2           
+## 5 PAL0708                 5 Adelie… Anvers Torge… Adul… N3A1           
+## 6 PAL0708                 6 Adelie… Anvers Torge… Adul… N3A2           
+## # … with 10 more variables: `Clutch Completion` &lt;chr&gt;, `Date Egg` &lt;date&gt;,
+## #   `Culmen Length (mm)` &lt;dbl&gt;, `Culmen Depth (mm)` &lt;dbl&gt;, `Flipper Length
+## #   (mm)` &lt;dbl&gt;, `Body Mass (g)` &lt;dbl&gt;, Sex &lt;chr&gt;, `Delta 15 N (o/oo)` &lt;dbl&gt;,
+## #   `Delta 13 C (o/oo)` &lt;dbl&gt;, Comments &lt;chr&gt;</code></pre>
+<p>For this exercise, we’re gonna use the <code>penguins</code> dataset.</p>
+</div>
+<div id="questions-1" class="section level3">
+<h3><span class="header-section-number">3.1.3</span> Questions</h3>
+<p><strong>1)</strong> Create a github acocunt if not done yet.</p>
+<p><strong>2)</strong> Configure Rstudio with your github account using the <code>usethis</code> package.</p>
+<p><strong>3)</strong> Store your GITHUB Personal Authorisation Token in your .Renviron file</p>
+<p><strong>4)</strong> Create a new R Markdown project, and create a new git repository</p>
+<p><strong>5)</strong> Create a new Rmarkdon document, in your project. Then save the file and stage it.</p>
+<p><strong>6)</strong> Create a new commit including the new file and push it to github (Check on github that it works).</p>
+<p><strong>7)</strong> Edit the file. Delete everything after line 12. Add a new section title, simple text and text in bold font. Then knit and compile.</p>
+<p><strong>8)</strong> Make a new commit (with a meaningful message), and push to github.</p>
+<p><strong>9)</strong> Create a new branch, and add a new section to the rmarkdown file in this branch. Whatever you want. I would suggest a graph of the data.</p>
+<p><strong>10)</strong> Creat a commit and push it to the branch.</p>
+<p><strong>11)</strong> On github, create a pull request to merge the 2 different branches.</p>
+<p><strong>12)</strong> Check and accep the pull request to merge the 2 branches.</p>
+<p>You have successfully used all the essential tools of <code>git</code> 🎉 . You are really to explore 🕵 and discover its power 💪</p>
+</div>
+<div id="happy-github-ing" class="section level3">
+<h3><span class="header-section-number">3.1.4</span> Happy git(hub)-ing</h3>
+<p><img src="images/github_ninja.jpg" width="20%" style="display: block; margin: auto;" /></p>
+
+</div>
+</div>
+<!-- </div> -->
+
+
+
 <script src="js/solution.js"></script>
             </section>
 
           </div>
         </div>
       </div>
-<a href="préface.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="quest-ce-que-r-et-pourquoi-lutiliser-dans-ce-cours.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="introduction-to-github-with-r.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="refresher-on-glm.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -263,7 +295,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/BIO8940-uOttawa/class_book/index.Rmd",
+"link": "https://github.com/BIO8940-uOttawa/class_book/01_03-github.Rmd",
 "text": "Edit"
 },
 "history": {
