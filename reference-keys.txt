@@ -1,12 +1,13 @@
-fig:unnamed-chunk-15
-fig:unnamed-chunk-16
+fig:unnamed-chunk-10
+fig:unnamed-chunk-17
+fig:unnamed-chunk-18
 text-editor-or-ide
 introduction-to-open-science
 introduction-to-rmarkdown
 practical
 context
 questions
-happy-coding
+examples
 introduction-to-github-with-r
 practical-1
 context-1

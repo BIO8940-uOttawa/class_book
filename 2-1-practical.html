@@ -156,7 +156,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.1" data-path="2-1-practical.html"><a href="2-1-practical.html"><i class="fa fa-check"></i><b>2.1</b> Practical</a><ul>
 <li class="chapter" data-level="2.1.1" data-path="2-1-practical.html"><a href="2-1-practical.html#context"><i class="fa fa-check"></i><b>2.1.1</b> Context</a></li>
 <li class="chapter" data-level="2.1.2" data-path="2-1-practical.html"><a href="2-1-practical.html#questions"><i class="fa fa-check"></i><b>2.1.2</b> Questions</a></li>
-<li class="chapter" data-level="2.1.3" data-path="2-1-practical.html"><a href="2-1-practical.html#happy-coding"><i class="fa fa-check"></i><b>2.1.3</b> Happy coding</a></li>
+<li class="chapter" data-level="2.1.3" data-path="2-1-practical.html"><a href="2-1-practical.html#examples"><i class="fa fa-check"></i><b>2.1.3</b> Examples</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="3-introduction-to-github-with-r.html"><a href="3-introduction-to-github-with-r.html"><i class="fa fa-check"></i><b>3</b> Introduction to github with R</a><ul>
@@ -214,17 +214,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="practical" class="section level2">
 <h2><span class="header-section-number">2.1</span> Practical</h2>
+<p>We will create a new Rmarkdown document and edit it using basic <code>R</code> and <code>Rmarkdown</code> functions.</p>
 <div id="context" class="section level3">
 <h3><span class="header-section-number">2.1.1</span> Context</h3>
-<p>Let’s apply what we have learnt in the course on <strong>Writing dynamic and reproducible documents - An introduction to R Markdown</strong>
-<!-- add link to slides(https:// mysite /intro_rmarkdown/#1).  --></p>
-<p>We will use the awesome <code>palmerpenguins</code> dataset 🐧, an alternative to Fisher’s <code>iris</code> dataset, to explore and visualize data.</p>
+<p>We will use the awesome <code>palmerpenguins</code> dataset 🐧 to explore and visualize data.</p>
 <p>These data have been collected and shared by <a href="https://www.uaf.edu/cfos/people/faculty/detail/kristen-gorman.php">Dr. Kristen Gorman</a> and <a href="https://pal.lternet.edu/">Palmer Station, Antarctica LTER</a>.</p>
 <p>The package was built by Drs Allison Horst and Alison Hill, check out the <a href="https://allisonhorst.github.io/palmerpenguins/">official website</a>.</p>
-<p>The package <code>palmerpenguins</code> has two datasets.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="2-1-practical.html#cb2-1"></a><span class="kw">library</span>(palmerpenguins)</span></code></pre></div>
-<p>The dataset <code>penguins</code> is a simplified version of the raw data; see <code>?penguins</code> for more info:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="2-1-practical.html#cb3-1"></a><span class="kw">head</span>(penguins)</span></code></pre></div>
+<p>The package <code>palmerpenguins</code> has two datasets:</p>
+<ul>
+<li><code>penguins_raw</code> has the raw data of penguins observations (see <code>?penguins_raw</code> for more info)</li>
+<li><code>penguins</code> is a simplified version of the raw data (see <code>?penguins</code> for more info)</li>
+</ul>
+<p>For this exercise, we’re gonna use the <code>penguins</code> dataset.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="2-1-practical.html#cb2-1"></a><span class="kw">library</span>(palmerpenguins)</span>
+<span id="cb2-2"><a href="2-1-practical.html#cb2-2"></a><span class="kw">head</span>(penguins)</span></code></pre></div>
 <pre><code>## # A tibble: 6 x 8
 ##   species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g sex  
 ##   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt; &lt;fct&gt;
@@ -235,32 +238,82 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 5 Adelie  Torge…           36.7          19.3              193        3450 fema…
 ## 6 Adelie  Torge…           39.3          20.6              190        3650 male 
 ## # … with 1 more variable: year &lt;int&gt;</code></pre>
-<p>The other dataset <code>penguins_raw</code> has the raw data; see <code>?penguins_raw</code> for more info:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="2-1-practical.html#cb5-1"></a><span class="kw">head</span>(penguins_raw)</span></code></pre></div>
-<pre><code>## # A tibble: 6 x 17
-##   studyName `Sample Number` Species Region Island Stage `Individual ID`
-##   &lt;chr&gt;               &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;          
-## 1 PAL0708                 1 Adelie… Anvers Torge… Adul… N1A1           
-## 2 PAL0708                 2 Adelie… Anvers Torge… Adul… N1A2           
-## 3 PAL0708                 3 Adelie… Anvers Torge… Adul… N2A1           
-## 4 PAL0708                 4 Adelie… Anvers Torge… Adul… N2A2           
-## 5 PAL0708                 5 Adelie… Anvers Torge… Adul… N3A1           
-## 6 PAL0708                 6 Adelie… Anvers Torge… Adul… N3A2           
-## # … with 10 more variables: `Clutch Completion` &lt;chr&gt;, `Date Egg` &lt;date&gt;,
-## #   `Culmen Length (mm)` &lt;dbl&gt;, `Culmen Depth (mm)` &lt;dbl&gt;, `Flipper Length
-## #   (mm)` &lt;dbl&gt;, `Body Mass (g)` &lt;dbl&gt;, Sex &lt;chr&gt;, `Delta 15 N (o/oo)` &lt;dbl&gt;,
-## #   `Delta 13 C (o/oo)` &lt;dbl&gt;, Comments &lt;chr&gt;</code></pre>
-<p>For this exercise, we’re gonna use the <code>penguins</code> dataset.</p>
 </div>
 <div id="questions" class="section level3">
 <h3><span class="header-section-number">2.1.2</span> Questions</h3>
 <p><strong>1)</strong> Install the package <code>palmerpenguins</code>.</p>
-<p><strong>2)</strong> Create a new R Markdown document, name it and save it. Delete everything after line 12. Add a new section title, simple text and text in bold font. Compile (“Knit”).</p>
-<p><strong>3)</strong> Add a chunk in which you load the <code>palmerpenguins</code>. The corresponding line of code should be hidden in the output. Load also the <code>tidyverse</code> suite of packages. Modify the defaults to suppress all messages.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r exer"><code class="sourceCode r"><span id="cb4-1"><a href="2-1-practical.html#cb4-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;palmerpenguins&quot;</span>)</span></code></pre></div>
+<p><strong>2)</strong></p>
+<ul>
+<li>Create a new R Markdown document, name it and save it.</li>
+<li>Delete everything after line 12.</li>
+<li>Add a new section title, simple text and text in bold font.</li>
+<li>Compile (“Knit”).</li>
+</ul>
+<p><strong>3)</strong></p>
+<ul>
+<li>Add a chunk in which you load the <code>palmerpenguins</code>. The corresponding line of code should be hidden in the output.</li>
+<li>Load also the <code>tidyverse</code> suite of packages. Modify the defaults to suppress all messages.</li>
+</ul>
+<div class="exer">
+<div class="sourceCode" id="cb5"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb5-1"><a href="2-1-practical.html#cb5-1"></a><span class="bn">```{r, echo = FALSE, message = FALSE}</span></span>
+<span id="cb5-2"><a href="2-1-practical.html#cb5-2"></a><span class="bn">library(palmerpenguins)</span></span>
+<span id="cb5-3"><a href="2-1-practical.html#cb5-3"></a><span class="bn">library(tidyverse)</span></span>
+<span id="cb5-4"><a href="2-1-practical.html#cb5-4"></a><span class="bn">```</span></span></code></pre></div>
+</div>
 <p><strong>4)</strong> Add another chunk in which you build a table with the 10 first rows of the dataset.</p>
+<div class="exer">
+<div class="sourceCode" id="cb6"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb6-1"><a href="2-1-practical.html#cb6-1"></a><span class="bn">```{r}</span></span>
+<span id="cb6-2"><a href="2-1-practical.html#cb6-2"></a><span class="bn">penguins %&gt;%</span></span>
+<span id="cb6-3"><a href="2-1-practical.html#cb6-3"></a><span class="bn">  slice(1:10) %&gt;%</span></span>
+<span id="cb6-4"><a href="2-1-practical.html#cb6-4"></a><span class="bn">  knitr::kable()</span></span>
+<span id="cb6-5"><a href="2-1-practical.html#cb6-5"></a><span class="bn">```</span></span></code></pre></div>
+</div>
 <p><strong>5)</strong> In a new section, display how many individuals, penguins species and islands we have in the dataset. This info should appear directly in the text, you need to use inline code 😄. Calculate the mean of the (numeric) traits measured on the penguins.</p>
+<div class="exer">
+<div class="sourceCode" id="cb7"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb7-1"><a href="2-1-practical.html#cb7-1"></a><span class="fu">## Numerical exploration</span></span>
+<span id="cb7-2"><a href="2-1-practical.html#cb7-2"></a></span>
+<span id="cb7-3"><a href="2-1-practical.html#cb7-3"></a>There are <span class="bn">`r nrow(penguins)`</span> penguins in the dataset, and <span class="bn">`r length(unique(penguins$species))`</span> different species.</span>
+<span id="cb7-4"><a href="2-1-practical.html#cb7-4"></a>The data were collected in <span class="bn">`r length(unique(penguins$island))`</span> islands of the Palmer archipelago in Antarctica.</span>
+<span id="cb7-5"><a href="2-1-practical.html#cb7-5"></a></span>
+<span id="cb7-6"><a href="2-1-practical.html#cb7-6"></a>The mean of all traits that were measured on the penguins are:</span>
+<span id="cb7-7"><a href="2-1-practical.html#cb7-7"></a><span class="bn">```{r echo = FALSE}</span></span>
+<span id="cb7-8"><a href="2-1-practical.html#cb7-8"></a><span class="bn">penguins %&gt;%</span></span>
+<span id="cb7-9"><a href="2-1-practical.html#cb7-9"></a><span class="bn">  group_by(species) %&gt;%</span></span>
+<span id="cb7-10"><a href="2-1-practical.html#cb7-10"></a><span class="bn">  summarize(across(where(is.numeric), mean, na.rm = TRUE))</span></span>
+<span id="cb7-11"><a href="2-1-practical.html#cb7-11"></a><span class="bn">```</span></span></code></pre></div>
+</div>
 <p><strong>6)</strong> In another section, entitled ‘Graphical exploration’, build a figure with 3 superimposed histograms, each one corresponding to the body mass of a species.</p>
+<div class="exer">
+<div class="sourceCode" id="cb8"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb8-1"><a href="2-1-practical.html#cb8-1"></a><span class="fu">## Graphical exploration</span></span>
+<span id="cb8-2"><a href="2-1-practical.html#cb8-2"></a></span>
+<span id="cb8-3"><a href="2-1-practical.html#cb8-3"></a>A histogram of body mass per species:</span>
+<span id="cb8-4"><a href="2-1-practical.html#cb8-4"></a><span class="bn">```{r, fig.cap=&quot;Distribution of body mass by species of penguins&quot;}</span></span>
+<span id="cb8-5"><a href="2-1-practical.html#cb8-5"></a><span class="bn">penguins %&gt;%</span></span>
+<span id="cb8-6"><a href="2-1-practical.html#cb8-6"></a><span class="bn">  ggplot() +</span></span>
+<span id="cb8-7"><a href="2-1-practical.html#cb8-7"></a><span class="bn">  aes(x = body_mass_g) +</span></span>
+<span id="cb8-8"><a href="2-1-practical.html#cb8-8"></a><span class="bn">  geom_histogram(aes(fill = species),</span></span>
+<span id="cb8-9"><a href="2-1-practical.html#cb8-9"></a><span class="bn">                 alpha = 0.5,</span></span>
+<span id="cb8-10"><a href="2-1-practical.html#cb8-10"></a><span class="bn">                 position = &quot;identity&quot;) +</span></span>
+<span id="cb8-11"><a href="2-1-practical.html#cb8-11"></a><span class="bn">  scale_fill_manual(values = c(&quot;darkorange&quot;,&quot;purple&quot;,&quot;cyan4&quot;)) +</span></span>
+<span id="cb8-12"><a href="2-1-practical.html#cb8-12"></a><span class="bn">  theme_minimal() +</span></span>
+<span id="cb8-13"><a href="2-1-practical.html#cb8-13"></a><span class="bn">  labs(x = &quot;Body mass (g)&quot;,</span></span>
+<span id="cb8-14"><a href="2-1-practical.html#cb8-14"></a><span class="bn">       y = &quot;Frequency&quot;,</span></span>
+<span id="cb8-15"><a href="2-1-practical.html#cb8-15"></a><span class="bn">       title = &quot;Penguin body mass&quot;)</span></span>
+<span id="cb8-16"><a href="2-1-practical.html#cb8-16"></a><span class="bn">```</span></span></code></pre></div>
+</div>
 <p><strong>7)</strong> In another section, entitled ‘Linear regression’, fit a model of bill length as a function of body size (flipper length), body mass and sex. Obtain the output and graphically evaluate the assumptions of the model.</p>
+<div class="exer">
+<div class="sourceCode" id="cb9"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb9-1"><a href="2-1-practical.html#cb9-1"></a><span class="fu">## Linear regression</span></span>
+<span id="cb9-2"><a href="2-1-practical.html#cb9-2"></a></span>
+<span id="cb9-3"><a href="2-1-practical.html#cb9-3"></a>And here is a nice model with graphical output</span>
+<span id="cb9-4"><a href="2-1-practical.html#cb9-4"></a><span class="bn">```{r, fig.cap = &quot;Checking assumptions of the model&quot;}</span></span>
+<span id="cb9-5"><a href="2-1-practical.html#cb9-5"></a><span class="bn">m1 &lt;- lm(bill_length_mm ~  flipper_length_mm + body_mass_g + sex, data = penguins)</span></span>
+<span id="cb9-6"><a href="2-1-practical.html#cb9-6"></a><span class="bn">summary(m1)</span></span>
+<span id="cb9-7"><a href="2-1-practical.html#cb9-7"></a><span class="bn">par(mfrow= c(2,2))</span></span>
+<span id="cb9-8"><a href="2-1-practical.html#cb9-8"></a><span class="bn">plot(m1)</span></span>
+<span id="cb9-9"><a href="2-1-practical.html#cb9-9"></a><span class="bn">```</span></span></code></pre></div>
+</div>
 <p><strong>8)</strong> Add references manually or using <code>citr</code> in <code>RStudio</code>.</p>
 <ol style="list-style-type: decimal">
 <li>Pick a recent publication from the researcher who shared the data, Dr Kristen Gorman. Import this publication in your favorite references manager (we use Zotero, no hard feeling), and create a bibtex reference that you will add to to the file <code>mabiblio.bib</code>.</li>
@@ -271,9 +324,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><strong>9)</strong> Change the default citation format (Chicago style) into the The American Naturalist format. It can be found here <a href="https://www.zotero.org/styles" class="uri">https://www.zotero.org/styles</a>. To do soo, add <code>csl: the-american-naturalist.csl</code> in the YAML.</p>
 <p><strong>10)</strong> Build your report in html, pdf and docx format. 🎉</p>
 </div>
-<div id="happy-coding" class="section level3">
-<h3><span class="header-section-number">2.1.3</span> Happy coding</h3>
-<p><img src="images/lter_penguins.png" /></p>
+<div id="examples" class="section level3">
+<h3><span class="header-section-number">2.1.3</span> Examples</h3>
+You can see an example of the <a href="data/examples/rmarkdown_practical.Rmd">Rmarkdown</a> and <a href="data/examples/rmarkdown_practical.pdf">pdf</a> output <a href="data/examples">here</a>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-10"></span>
+<img src="images/lter_penguins.png" alt="Happy coding" width="20%" />
+<p class="caption">
+Figure 2.1: Happy coding
+</p>
+</div>
 
 </div>
 </div>

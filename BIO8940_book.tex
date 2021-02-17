@@ -516,29 +516,32 @@ Ce document est mis à disposition selon les termes de la \href{http://creativec
 \hypertarget{practical}{%
 \section{Practical}\label{practical}}
 
+We will create a new Rmarkdown document and edit it using basic \texttt{R} and \texttt{Rmarkdown} functions.
+
 \hypertarget{context}{%
 \subsection{Context}\label{context}}
 
-Let's apply what we have learnt in the course on \textbf{Writing dynamic and reproducible documents - An introduction to R Markdown}
-
-We will use the awesome \texttt{palmerpenguins} dataset 🐧, an alternative to Fisher's \texttt{iris} dataset, to explore and visualize data.
+We will use the awesome \texttt{palmerpenguins} dataset 🐧 to explore and visualize data.
 
 These data have been collected and shared by \href{https://www.uaf.edu/cfos/people/faculty/detail/kristen-gorman.php}{Dr.~Kristen Gorman} and \href{https://pal.lternet.edu/}{Palmer Station, Antarctica LTER}.
 
 The package was built by Drs Allison Horst and Alison Hill, check out the \href{https://allisonhorst.github.io/palmerpenguins/}{official website}.
 
-The package \texttt{palmerpenguins} has two datasets.
+The package \texttt{palmerpenguins} has two datasets:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{penguins\_raw} has the raw data of penguins observations (see \texttt{?penguins\_raw} for more info)
+\item
+  \texttt{penguins} is a simplified version of the raw data (see \texttt{?penguins} for more info)
+\end{itemize}
+
+For this exercise, we're gonna use the \texttt{penguins} dataset.
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \KeywordTok{library}\NormalTok{(palmerpenguins)}
-\end{Highlighting}
-\end{Shaded}
-
-The dataset \texttt{penguins} is a simplified version of the raw data; see \texttt{?penguins} for more info:
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \KeywordTok{head}\NormalTok{(penguins)}
 \end{Highlighting}
 \end{Shaded}
@@ -556,48 +559,118 @@ The dataset \texttt{penguins} is a simplified version of the raw data; see \text
 ## # ... with 1 more variable: year <int>
 \end{verbatim}
 
-The other dataset \texttt{penguins\_raw} has the raw data; see \texttt{?penguins\_raw} for more info:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{head}\NormalTok{(penguins_raw)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## # A tibble: 6 x 17
-##   studyName `Sample Number` Species Region Island Stage `Individual ID`
-##   <chr>               <dbl> <chr>   <chr>  <chr>  <chr> <chr>          
-## 1 PAL0708                 1 Adelie~ Anvers Torge~ Adul~ N1A1           
-## 2 PAL0708                 2 Adelie~ Anvers Torge~ Adul~ N1A2           
-## 3 PAL0708                 3 Adelie~ Anvers Torge~ Adul~ N2A1           
-## 4 PAL0708                 4 Adelie~ Anvers Torge~ Adul~ N2A2           
-## 5 PAL0708                 5 Adelie~ Anvers Torge~ Adul~ N3A1           
-## 6 PAL0708                 6 Adelie~ Anvers Torge~ Adul~ N3A2           
-## # ... with 10 more variables: `Clutch Completion` <chr>, `Date Egg` <date>,
-## #   `Culmen Length (mm)` <dbl>, `Culmen Depth (mm)` <dbl>, `Flipper Length
-## #   (mm)` <dbl>, `Body Mass (g)` <dbl>, Sex <chr>, `Delta 15 N (o/oo)` <dbl>,
-## #   `Delta 13 C (o/oo)` <dbl>, Comments <chr>
-\end{verbatim}
-
-For this exercise, we're gonna use the \texttt{penguins} dataset.
-
 \hypertarget{questions}{%
 \subsection{Questions}\label{questions}}
 
 \textbf{1)} Install the package \texttt{palmerpenguins}.
 
-\textbf{2)} Create a new R Markdown document, name it and save it. Delete everything after line 12. Add a new section title, simple text and text in bold font. Compile (``Knit'').
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{install.packages}\NormalTok{(}\StringTok{"palmerpenguins"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
 
-\textbf{3)} Add a chunk in which you load the \texttt{palmerpenguins}. The corresponding line of code should be hidden in the output. Load also the \texttt{tidyverse} suite of packages. Modify the defaults to suppress all messages.
+\textbf{2)}
+
+\begin{itemize}
+\tightlist
+\item
+  Create a new R Markdown document, name it and save it.
+\item
+  Delete everything after line 12.
+\item
+  Add a new section title, simple text and text in bold font.
+\item
+  Compile (``Knit'').
+\end{itemize}
+
+\textbf{3)}
+
+\begin{itemize}
+\tightlist
+\item
+  Add a chunk in which you load the \texttt{palmerpenguins}. The corresponding line of code should be hidden in the output.
+\item
+  Load also the \texttt{tidyverse} suite of packages. Modify the defaults to suppress all messages.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BaseNTok{```\{r, echo = FALSE, message = FALSE\}}
+\BaseNTok{library(palmerpenguins)}
+\BaseNTok{library(tidyverse)}
+\BaseNTok{```}
+\end{Highlighting}
+\end{Shaded}
 
 \textbf{4)} Add another chunk in which you build a table with the 10 first rows of the dataset.
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\BaseNTok{```\{r\}}
+\BaseNTok{penguins %>%}
+\BaseNTok{  slice(1:10) %>%}
+\BaseNTok{  knitr::kable()}
+\BaseNTok{```}
+\end{Highlighting}
+\end{Shaded}
+
 \textbf{5)} In a new section, display how many individuals, penguins species and islands we have in the dataset. This info should appear directly in the text, you need to use inline code 😄. Calculate the mean of the (numeric) traits measured on the penguins.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{## Numerical exploration}
+
+\NormalTok{There are }\BaseNTok{`r nrow(penguins)`}\NormalTok{ penguins in the dataset, and }\BaseNTok{`r length(unique(penguins$species))`}\NormalTok{ different species.}
+\NormalTok{The data were collected in }\BaseNTok{`r length(unique(penguins$island))`}\NormalTok{ islands of the Palmer archipelago in Antarctica.}
+
+\NormalTok{The mean of all traits that were measured on the penguins are:}
+\BaseNTok{```\{r echo = FALSE\}}
+\BaseNTok{penguins %>%}
+\BaseNTok{  group_by(species) %>%}
+\BaseNTok{  summarize(across(where(is.numeric), mean, na.rm = TRUE))}
+\BaseNTok{```}
+\end{Highlighting}
+\end{Shaded}
 
 \textbf{6)} In another section, entitled `Graphical exploration', build a figure with 3 superimposed histograms, each one corresponding to the body mass of a species.
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{## Graphical exploration}
+
+\NormalTok{A histogram of body mass per species:}
+\BaseNTok{```\{r, fig.cap="Distribution of body mass by species of penguins"\}}
+\BaseNTok{penguins %>%}
+\BaseNTok{  ggplot() +}
+\BaseNTok{  aes(x = body_mass_g) +}
+\BaseNTok{  geom_histogram(aes(fill = species),}
+\BaseNTok{                 alpha = 0.5,}
+\BaseNTok{                 position = "identity") +}
+\BaseNTok{  scale_fill_manual(values = c("darkorange","purple","cyan4")) +}
+\BaseNTok{  theme_minimal() +}
+\BaseNTok{  labs(x = "Body mass (g)",}
+\BaseNTok{       y = "Frequency",}
+\BaseNTok{       title = "Penguin body mass")}
+\BaseNTok{```}
+\end{Highlighting}
+\end{Shaded}
+
 \textbf{7)} In another section, entitled `Linear regression', fit a model of bill length as a function of body size (flipper length), body mass and sex. Obtain the output and graphically evaluate the assumptions of the model.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{## Linear regression}
+
+\NormalTok{And here is a nice model with graphical output}
+\BaseNTok{```\{r, fig.cap = "Checking assumptions of the model"\}}
+\BaseNTok{m1 <- lm(bill_length_mm ~  flipper_length_mm + body_mass_g + sex, data = penguins)}
+\BaseNTok{summary(m1)}
+\BaseNTok{par(mfrow= c(2,2))}
+\BaseNTok{plot(m1)}
+\BaseNTok{```}
+\end{Highlighting}
+\end{Shaded}
 
 \textbf{8)} Add references manually or using \texttt{citr} in \texttt{RStudio}.
 
@@ -618,10 +691,19 @@ For this exercise, we're gonna use the \texttt{penguins} dataset.
 
 \textbf{10)} Build your report in html, pdf and docx format. 🎉
 
-\hypertarget{happy-coding}{%
-\subsection{Happy coding}\label{happy-coding}}
+\hypertarget{examples}{%
+\subsection{Examples}\label{examples}}
 
-\includegraphics{images/lter_penguins.png}
+You can see an example of the \href{data/examples/rmarkdown_practical.Rmd}{Rmarkdown} and \href{data/examples/rmarkdown_practical.pdf}{pdf} output \href{data/examples}{here}
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.2\linewidth]{images/lter_penguins} 
+
+}
+
+\caption{Happy coding}\label{fig:unnamed-chunk-10}
+\end{figure}
 
 \hypertarget{introduction-to-github-with-r}{%
 \chapter{Introduction to github with R}\label{introduction-to-github-with-r}}
@@ -792,7 +874,7 @@ Test pour montrer la solution
 ## [1] 14.66667 12.00000 11.66667 14.33333 10.33333 11.00000
 \end{verbatim}
 
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-14-1.pdf}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-16-1.pdf}
 
 \hypertarget{introduction-to-linear-mixed-models}{%
 \chapter{Introduction to linear mixed models}\label{introduction-to-linear-mixed-models}}
@@ -811,7 +893,7 @@ Unicorns, a legendary animal and also symbol or Scotland, are frequently describ
 
 }
 
-\caption{The superb unicorn of the Scottish Highlands}\label{fig:unnamed-chunk-15}
+\caption{The superb unicorn of the Scottish Highlands}\label{fig:unnamed-chunk-17}
 \end{figure}
 
 Despite their image of purity and grace, unicorns (\emph{Unicornus legendaricus}) are raging fighter when it comes to compete for the best sweets you can find at the bottom of rainbows (unicorn favourite source of food).
@@ -900,7 +982,7 @@ You can use \texttt{summary(unicorns)} to get an overview of the data and/or \te
 
 }
 
-\caption{The superb unicorn}\label{fig:unnamed-chunk-16}
+\caption{The superb unicorn}\label{fig:unnamed-chunk-18}
 \end{figure}
 
 \hypertarget{introduction-to-glmm}{%
@@ -1044,7 +1126,7 @@ I usually like to start with a relatively simple overall plot of the data, disre
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-21-1.pdf}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-23-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1058,7 +1140,7 @@ I usually like to start with a relatively simple overall plot of the data, disre
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-21-2.pdf}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-23-2.pdf}
 
 \textbf{Exercise} generate these plots and figure out how they work before continuing. Try conditioning/faceting on population rather than region: for ggplot you might want to take out the nrow=1 specification. If you want try reorder the subplots by overall mean fruit set and/or colour the points according to the region they come from.
 
@@ -1090,7 +1172,7 @@ Now time to plot it
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-23-1.pdf}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-25-1.pdf}
 
 We could also calculate the variance for each genotype × treatment combination and provide a statistical summary of these variances.
 This reveals substantial variation among the sample variances on the transformed data. In addition to heterogeneous variances across groups, Figure 1 reveals many zeroes in groups, and some groups with a mean and variance of zero, further suggesting we need a non-normal error distribution, and perhaps something other than a Poisson distribution.
@@ -1174,7 +1256,7 @@ Now we can plot them.
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-27-1.pdf}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-29-1.pdf}
 
 Same with ggplot
 
@@ -1214,7 +1296,7 @@ Same with ggplot
 ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 \end{verbatim}
 
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-28-1.pdf}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-30-1.pdf}
 
 These fits are not rigorous statistical tests --- they violate a variety of assumptions of linear regression (e.g.~constant variance, independence), but they are good enough to give us an initial guess about what distributions we should use.
 
@@ -1248,7 +1330,7 @@ Just to avoid surprises
 ## instead
 \end{verbatim}
 
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-29-1.pdf}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-31-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1261,7 +1343,7 @@ Just to avoid surprises
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-29-2.pdf}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-31-2.pdf}
 
 \hypertarget{fitting-group-wise-glm}{%
 \subsection{Fitting group-wise GLM}\label{fitting-group-wise-glm}}
@@ -1283,7 +1365,7 @@ This should result in reasonable variation among treatment effects. We first fit
 ## Using grp as id variables
 \end{verbatim}
 
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-30-1.pdf}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-32-1.pdf}
 
 \textbf{Exercise}
 Fit plot to examine output
@@ -1591,7 +1673,7 @@ We can also inspect the random effects estimates themselves (in proper statistic
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-42-1.pdf}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-44-1.pdf}
 
 \begin{verbatim}
 ## TableGrob (1 x 2) "arrange": 2 grobs
@@ -1712,7 +1794,7 @@ In addition, we can check the normality of the random effects and find they are 
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-45-1.pdf}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-47-1.pdf}
 
 \hypertarget{conclusions}{%
 \section{Conclusions}\label{conclusions}}
