@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>R | BIO8940 Advanced stats and Open Science</title>
+  <title>Installation des logiciels nécessaires | BIO8940 Advanced stats and Open Science</title>
   <meta name="description" content="Theory and practicals for BIO8940 course at the University of Ottawa" />
   <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="R | BIO8940 Advanced stats and Open Science" />
+  <meta property="og:title" content="Installation des logiciels nécessaires | BIO8940 Advanced stats and Open Science" />
   <meta property="og:type" content="book" />
   
   <meta property="og:image" content="images/missing.png" />
@@ -16,7 +16,7 @@
   <meta name="github-repo" content="BIO8940-uOttawa/class_book" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="R | BIO8940 Advanced stats and Open Science" />
+  <meta name="twitter:title" content="Installation des logiciels nécessaires | BIO8940 Advanced stats and Open Science" />
   
   <meta name="twitter:description" content="Theory and practicals for BIO8940 course at the University of Ottawa" />
   <meta name="twitter:image" content="images/missing.png" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="6-2-conclusions.html"/>
-<link rel="next" href="to-do-list.html"/>
+<link rel="prev" href="quest-ce-que-r-et-pourquoi-lutiliser-dans-ce-cours.html"/>
+<link rel="next" href="instructions-générales-pour-les-laboratoires.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -212,10 +212,53 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="r-1" class="section level1 unnumbered">
-<h1>R</h1>
-<p>Need to write something about R</p>
-
+<div id="installation-des-logiciels-nécessaires" class="section level2 unnumbered">
+<h2>Installation des logiciels nécessaires</h2>
+<div id="r" class="section level3 unnumbered">
+<h3>R</h3>
+<p>Pour installer R sur un nouvel ordinateur, allez au site <a href="http://cran.r-project.org/" class="uri">http://cran.r-project.org/</a>.
+Vous y trouverez des versions compilées (binaries) ou non (sources) pour votre système d’exploitation de prédilection (Windows, MacOS, Linux).</p>
+<p>Note : R a déjà été installé sur les ordinateurs du laboratoire (la version pourrait être un peu plus ancienne, mais cela devrait être sans conséquences).</p>
+</div>
+<div id="text-editor-or-ide" class="section level3">
+<h3><span class="header-section-number">0.0.1</span> Text editor or IDE</h3>
+<p>Tinn-r
+Atom sublime, emacs, vim</p>
+<div id="rstudio" class="section level4 unnumbered">
+<h4>Rstudio</h4>
+<p>RStudio est un environnement de développement intégré (IDE) créé spécifiquement pour travailler avec R. Sa popularité connaît une progression foudroyante depuis 2014.
+Il permet de consulter dans une interface conviviale ses fichiers de script, la ligne de commande R, les rubriques d’aide,
+les graphiques, etc.</p>
+<p>RStudio est disponible à l’identique pour les plateformes Windows, OS X et Linux.
+Pour une utilisation locale sur son poste de travail, on installera la version libre (Open Source) de RStudio Desktop depuis le site
+<a href="https://www.rstudio.com/products/rstudio/download/" class="uri">https://www.rstudio.com/products/rstudio/download/</a></p>
+</div>
+<div id="visual-studio-code" class="section level4 unnumbered">
+<h4>Visual Studio Code</h4>
+</div>
+<div id="tinn-r" class="section level4 unnumbered">
+<h4>Tinn-r</h4>
+</div>
+</div>
+<div id="paquets-pour-r" class="section level3 unnumbered">
+<h3>Paquets pour R</h3>
+<ul>
+<li>Rmarkdown</li>
+<li>tinytex</li>
+</ul>
+<p>Ces 2 paquets devrait être installé automatiquement avec RStudio, mais pas toujours. Je vous recommande donc de les installer manuellement. Pour ce faire, simplement copier-coller le texte suivant dans le terminal R.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="installation-des-logiciels-nécessaires.html#cb1-1"></a><span class="kw">install.packages</span>(<span class="kw">c</span>(<span class="st">&quot;rmarkdown&quot;</span>, <span class="st">&quot;tinytex&quot;</span>))</span></code></pre></div>
+</div>
+<div id="pandoc" class="section level3 unnumbered">
+<h3>pandoc</h3>
+</div>
+<div id="latex" class="section level3 unnumbered">
+<h3>laTex</h3>
+<ul>
+<li>tinytex
+or others</li>
+</ul>
+</div>
 </div>
 <script src="js/solution.js"></script>
             </section>
@@ -223,8 +266,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </div>
         </div>
       </div>
-<a href="6-2-conclusions.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="to-do-list.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="quest-ce-que-r-et-pourquoi-lutiliser-dans-ce-cours.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="instructions-générales-pour-les-laboratoires.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -246,7 +289,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/BIO8940-uOttawa/class_book/99_01-R.Rmd",
+"link": "https://github.com/BIO8940-uOttawa/class_book/index.Rmd",
 "text": "Edit"
 },
 "history": {

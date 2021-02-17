@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>R | BIO8940 Advanced stats and Open Science</title>
+  <title>4 Refresher on glm | BIO8940 Advanced stats and Open Science</title>
   <meta name="description" content="Theory and practicals for BIO8940 course at the University of Ottawa" />
   <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="R | BIO8940 Advanced stats and Open Science" />
+  <meta property="og:title" content="4 Refresher on glm | BIO8940 Advanced stats and Open Science" />
   <meta property="og:type" content="book" />
   
   <meta property="og:image" content="images/missing.png" />
@@ -16,7 +16,7 @@
   <meta name="github-repo" content="BIO8940-uOttawa/class_book" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="R | BIO8940 Advanced stats and Open Science" />
+  <meta name="twitter:title" content="4 Refresher on glm | BIO8940 Advanced stats and Open Science" />
   
   <meta name="twitter:description" content="Theory and practicals for BIO8940 course at the University of Ottawa" />
   <meta name="twitter:image" content="images/missing.png" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="6-2-conclusions.html"/>
-<link rel="next" href="to-do-list.html"/>
+<link rel="prev" href="3-1-practical-1.html"/>
+<link rel="next" href="5-introduction-to-linear-mixed-models.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -212,9 +212,36 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="r-1" class="section level1 unnumbered">
-<h1>R</h1>
-<p>Need to write something about R</p>
+<div id="refresher-on-glm" class="section level1">
+<h1><span class="header-section-number">4</span> Refresher on <code>glm</code></h1>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="4-refresher-on-glm.html#cb12-1"></a>m1 &lt;-<span class="st"> </span><span class="kw">glm</span>(fish <span class="op">~</span><span class="st"> </span>french_captain, <span class="dt">data =</span> dads_joke, <span class="dt">family =</span> poisson)</span></code></pre></div>
+<p><strong>Exercice 5</strong></p>
+<p>On a relevé les notes en maths, anglais et sport d’une classe de 6 élèves et on a stocké ces données dans trois vecteurs :</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="4-refresher-on-glm.html#cb13-1"></a>maths &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">12</span>, <span class="dv">16</span>, <span class="dv">8</span>, <span class="dv">18</span>, <span class="dv">6</span>, <span class="dv">10</span>)</span>
+<span id="cb13-2"><a href="4-refresher-on-glm.html#cb13-2"></a>anglais &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">14</span>, <span class="dv">9</span>, <span class="dv">13</span>, <span class="dv">15</span>, <span class="dv">17</span>, <span class="dv">11</span>)</span>
+<span id="cb13-3"><a href="4-refresher-on-glm.html#cb13-3"></a>sport &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">18</span>, <span class="dv">11</span>, <span class="dv">14</span>, <span class="dv">10</span>, <span class="dv">8</span>, <span class="dv">12</span>)</span></code></pre></div>
+<p>Calculer la moyenne des élèves de la classe en anglais.</p>
+<p>Calculer la moyenne générale de chaque élève.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r exer"><code class="sourceCode r"><span id="cb14-1"><a href="4-refresher-on-glm.html#cb14-1"></a><span class="kw">mean</span>(anglais)</span></code></pre></div>
+<pre><code>## [1] 13.16667</code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r exer"><code class="sourceCode r"><span id="cb16-1"><a href="4-refresher-on-glm.html#cb16-1"></a>(maths <span class="op">+</span><span class="st"> </span>anglais <span class="op">+</span><span class="st"> </span>sport) <span class="op">/</span><span class="st"> </span><span class="dv">3</span></span></code></pre></div>
+<pre><code>## [1] 14.66667 12.00000 11.66667 14.33333 10.33333 11.00000</code></pre>
+<p><strong>Exercice 5</strong></p>
+<p>On a relevé les notes en maths, anglais et sport d’une classe de 6 élèves et on a stocké ces données dans trois vecteurs :</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="4-refresher-on-glm.html#cb18-1"></a>maths &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">12</span>, <span class="dv">16</span>, <span class="dv">8</span>, <span class="dv">18</span>, <span class="dv">6</span>, <span class="dv">10</span>)</span>
+<span id="cb18-2"><a href="4-refresher-on-glm.html#cb18-2"></a>anglais &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">14</span>, <span class="dv">9</span>, <span class="dv">13</span>, <span class="dv">15</span>, <span class="dv">17</span>, <span class="dv">11</span>)</span>
+<span id="cb18-3"><a href="4-refresher-on-glm.html#cb18-3"></a>sport &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">18</span>, <span class="dv">11</span>, <span class="dv">14</span>, <span class="dv">10</span>, <span class="dv">8</span>, <span class="dv">12</span>)</span></code></pre></div>
+<p>Calculer la moyenne des élèves de la classe en anglais.</p>
+<p>Calculer la moyenne générale de chaque élève.</p>
+<div class="exer">
+<p>Test pour montrer la solution</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="4-refresher-on-glm.html#cb19-1"></a><span class="kw">mean</span>(anglais)</span></code></pre></div>
+<pre><code>## [1] 13.16667</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="4-refresher-on-glm.html#cb21-1"></a>(maths <span class="op">+</span><span class="st"> </span>anglais <span class="op">+</span><span class="st"> </span>sport) <span class="op">/</span><span class="st"> </span><span class="dv">3</span></span></code></pre></div>
+<pre><code>## [1] 14.66667 12.00000 11.66667 14.33333 10.33333 11.00000</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="4-refresher-on-glm.html#cb23-1"></a><span class="kw">plot</span>(<span class="kw">rnorm</span>(<span class="dv">100</span>))</span></code></pre></div>
+<p><img src="BIO8940_book_files/figure-html/unnamed-chunk-14-1.svg" width="672" /></p>
+</div>
 
 </div>
 <script src="js/solution.js"></script>
@@ -223,8 +250,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </div>
         </div>
       </div>
-<a href="6-2-conclusions.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="to-do-list.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="3-1-practical-1.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="5-introduction-to-linear-mixed-models.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -246,7 +273,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/BIO8940-uOttawa/class_book/99_01-R.Rmd",
+"link": "https://github.com/BIO8940-uOttawa/class_book/02_01-intro_glm.Rmd",
 "text": "Edit"
 },
 "history": {
