@@ -156,7 +156,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.1" data-path="2-1-practical.html"><a href="2-1-practical.html"><i class="fa fa-check"></i><b>2.1</b> Practical</a><ul>
 <li class="chapter" data-level="2.1.1" data-path="2-1-practical.html"><a href="2-1-practical.html#context"><i class="fa fa-check"></i><b>2.1.1</b> Context</a></li>
 <li class="chapter" data-level="2.1.2" data-path="2-1-practical.html"><a href="2-1-practical.html#questions"><i class="fa fa-check"></i><b>2.1.2</b> Questions</a></li>
-<li class="chapter" data-level="2.1.3" data-path="2-1-practical.html"><a href="2-1-practical.html#examples"><i class="fa fa-check"></i><b>2.1.3</b> Examples</a></li>
+<li class="chapter" data-level="" data-path="2-1-practical.html"><a href="2-1-practical.html#example-of-output"><i class="fa fa-check"></i>Example of output</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="3-introduction-to-github-with-r.html"><a href="3-introduction-to-github-with-r.html"><i class="fa fa-check"></i><b>3</b> Introduction to github with R</a><ul>
@@ -164,7 +164,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.1.1" data-path="3-1-practical-1.html"><a href="3-1-practical-1.html#context-1"><i class="fa fa-check"></i><b>3.1.1</b> Context</a></li>
 <li class="chapter" data-level="3.1.2" data-path="3-1-practical-1.html"><a href="3-1-practical-1.html#information-of-the-data"><i class="fa fa-check"></i><b>3.1.2</b> Information of the data</a></li>
 <li class="chapter" data-level="3.1.3" data-path="3-1-practical-1.html"><a href="3-1-practical-1.html#questions-1"><i class="fa fa-check"></i><b>3.1.3</b> Questions</a></li>
-<li class="chapter" data-level="3.1.4" data-path="3-1-practical-1.html"><a href="3-1-practical-1.html#happy-github-ing"><i class="fa fa-check"></i><b>3.1.4</b> Happy git(hub)-ing</a></li>
 </ul></li>
 </ul></li>
 <li class="part"><span><b>II Statistics</b></span></li>
@@ -277,20 +276,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-4"><a href="2-1-practical.html#cb7-4"></a>The data were collected in <span class="bn">`r length(unique(penguins$island))`</span> islands of the Palmer archipelago in Antarctica.</span>
 <span id="cb7-5"><a href="2-1-practical.html#cb7-5"></a></span>
 <span id="cb7-6"><a href="2-1-practical.html#cb7-6"></a>The mean of all traits that were measured on the penguins are:</span>
-<span id="cb7-7"><a href="2-1-practical.html#cb7-7"></a><span class="bn">```{r echo = FALSE}</span></span>
-<span id="cb7-8"><a href="2-1-practical.html#cb7-8"></a><span class="bn">penguins %&gt;%</span></span>
-<span id="cb7-9"><a href="2-1-practical.html#cb7-9"></a><span class="bn">  group_by(species) %&gt;%</span></span>
-<span id="cb7-10"><a href="2-1-practical.html#cb7-10"></a><span class="bn">  summarize(across(where(is.numeric), mean, na.rm = TRUE))</span></span>
-<span id="cb7-11"><a href="2-1-practical.html#cb7-11"></a><span class="bn">```</span></span></code></pre></div>
+<span id="cb7-7"><a href="2-1-practical.html#cb7-7"></a></span>
+<span id="cb7-8"><a href="2-1-practical.html#cb7-8"></a><span class="bn">```{r echo = FALSE}</span></span>
+<span id="cb7-9"><a href="2-1-practical.html#cb7-9"></a><span class="bn">penguins %&gt;%</span></span>
+<span id="cb7-10"><a href="2-1-practical.html#cb7-10"></a><span class="bn">  group_by(species) %&gt;%</span></span>
+<span id="cb7-11"><a href="2-1-practical.html#cb7-11"></a><span class="bn">  summarize(across(where(is.numeric), mean, na.rm = TRUE))</span></span>
+<span id="cb7-12"><a href="2-1-practical.html#cb7-12"></a><span class="bn">```</span></span></code></pre></div>
 </div>
 <p><strong>6)</strong> In another section, entitled ‘Graphical exploration’, build a figure with 3 superimposed histograms, each one corresponding to the body mass of a species.</p>
 <div class="exer">
 <div class="sourceCode" id="cb8"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb8-1"><a href="2-1-practical.html#cb8-1"></a><span class="fu">## Graphical exploration</span></span>
 <span id="cb8-2"><a href="2-1-practical.html#cb8-2"></a></span>
 <span id="cb8-3"><a href="2-1-practical.html#cb8-3"></a>A histogram of body mass per species:</span>
-<span id="cb8-4"><a href="2-1-practical.html#cb8-4"></a><span class="bn">```{r, fig.cap=&quot;Distribution of body mass by species of penguins&quot;}</span></span>
-<span id="cb8-5"><a href="2-1-practical.html#cb8-5"></a><span class="bn">penguins %&gt;%</span></span>
-<span id="cb8-6"><a href="2-1-practical.html#cb8-6"></a><span class="bn">  ggplot() +</span></span>
+<span id="cb8-4"><a href="2-1-practical.html#cb8-4"></a></span>
+<span id="cb8-5"><a href="2-1-practical.html#cb8-5"></a><span class="bn">```{r, fig.cap = &quot;Distribution of body mass by species of penguins&quot;}</span></span>
+<span id="cb8-6"><a href="2-1-practical.html#cb8-6"></a><span class="bn">  ggplot(data = penguins) +</span></span>
 <span id="cb8-7"><a href="2-1-practical.html#cb8-7"></a><span class="bn">  aes(x = body_mass_g) +</span></span>
 <span id="cb8-8"><a href="2-1-practical.html#cb8-8"></a><span class="bn">  geom_histogram(aes(fill = species),</span></span>
 <span id="cb8-9"><a href="2-1-practical.html#cb8-9"></a><span class="bn">                 alpha = 0.5,</span></span>
@@ -302,17 +302,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-15"><a href="2-1-practical.html#cb8-15"></a><span class="bn">       title = &quot;Penguin body mass&quot;)</span></span>
 <span id="cb8-16"><a href="2-1-practical.html#cb8-16"></a><span class="bn">```</span></span></code></pre></div>
 </div>
-<p><strong>7)</strong> In another section, entitled ‘Linear regression’, fit a model of bill length as a function of body size (flipper length), body mass and sex. Obtain the output and graphically evaluate the assumptions of the model.</p>
+<p><strong>7)</strong> In another section, entitled <em>Linear regression</em>, fit a model of bill length as a function of body size (flipper length), body mass and sex. Obtain the output and graphically evaluate the assumptions of the model. As reminder here is how you fit a linear regression.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb9-1"><a href="2-1-practical.html#cb9-1"></a><span class="bn">```{r}</span></span>
+<span id="cb9-2"><a href="2-1-practical.html#cb9-2"></a><span class="bn">model &lt;- lm(Y ~  X1 + X2, data = data)</span></span>
+<span id="cb9-3"><a href="2-1-practical.html#cb9-3"></a><span class="bn">summary(model)</span></span>
+<span id="cb9-4"><a href="2-1-practical.html#cb9-4"></a><span class="bn">plot(model)</span></span>
+<span id="cb9-5"><a href="2-1-practical.html#cb9-5"></a><span class="bn">```</span></span></code></pre></div>
 <div class="exer">
-<div class="sourceCode" id="cb9"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb9-1"><a href="2-1-practical.html#cb9-1"></a><span class="fu">## Linear regression</span></span>
-<span id="cb9-2"><a href="2-1-practical.html#cb9-2"></a></span>
-<span id="cb9-3"><a href="2-1-practical.html#cb9-3"></a>And here is a nice model with graphical output</span>
-<span id="cb9-4"><a href="2-1-practical.html#cb9-4"></a><span class="bn">```{r, fig.cap = &quot;Checking assumptions of the model&quot;}</span></span>
-<span id="cb9-5"><a href="2-1-practical.html#cb9-5"></a><span class="bn">m1 &lt;- lm(bill_length_mm ~  flipper_length_mm + body_mass_g + sex, data = penguins)</span></span>
-<span id="cb9-6"><a href="2-1-practical.html#cb9-6"></a><span class="bn">summary(m1)</span></span>
-<span id="cb9-7"><a href="2-1-practical.html#cb9-7"></a><span class="bn">par(mfrow= c(2,2))</span></span>
-<span id="cb9-8"><a href="2-1-practical.html#cb9-8"></a><span class="bn">plot(m1)</span></span>
-<span id="cb9-9"><a href="2-1-practical.html#cb9-9"></a><span class="bn">```</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb10-1"><a href="2-1-practical.html#cb10-1"></a><span class="fu">## Linear regression</span></span>
+<span id="cb10-2"><a href="2-1-practical.html#cb10-2"></a></span>
+<span id="cb10-3"><a href="2-1-practical.html#cb10-3"></a>And here is a nice model with graphical output</span>
+<span id="cb10-4"><a href="2-1-practical.html#cb10-4"></a></span>
+<span id="cb10-5"><a href="2-1-practical.html#cb10-5"></a><span class="bn">```{r, fig.cap = &quot;Checking assumptions of the model&quot;}</span></span>
+<span id="cb10-6"><a href="2-1-practical.html#cb10-6"></a><span class="bn">m1 &lt;- lm(bill_length_mm ~  flipper_length_mm + body_mass_g + sex, data = penguins)</span></span>
+<span id="cb10-7"><a href="2-1-practical.html#cb10-7"></a><span class="bn">summary(m1)</span></span>
+<span id="cb10-8"><a href="2-1-practical.html#cb10-8"></a><span class="bn">par(mfrow= c(2,2))</span></span>
+<span id="cb10-9"><a href="2-1-practical.html#cb10-9"></a><span class="bn">plot(m1)</span></span>
+<span id="cb10-10"><a href="2-1-practical.html#cb10-10"></a><span class="bn">```</span></span></code></pre></div>
 </div>
 <p><strong>8)</strong> Add references manually or using <code>citr</code> in <code>RStudio</code>.</p>
 <ol style="list-style-type: decimal">
@@ -324,11 +330,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><strong>9)</strong> Change the default citation format (Chicago style) into the The American Naturalist format. It can be found here <a href="https://www.zotero.org/styles" class="uri">https://www.zotero.org/styles</a>. To do soo, add <code>csl: the-american-naturalist.csl</code> in the YAML.</p>
 <p><strong>10)</strong> Build your report in html, pdf and docx format. 🎉</p>
 </div>
-<div id="examples" class="section level3">
-<h3><span class="header-section-number">2.1.3</span> Examples</h3>
-You can see an example of the <a href="data/examples/rmarkdown_practical.Rmd">Rmarkdown</a> and <a href="data/examples/rmarkdown_practical.pdf">pdf</a> output <a href="data/examples">here</a>
+<div id="example-of-output" class="section level3 unnumbered">
+<h3>Example of output</h3>
+<p>You can see an example of the <a href="data/examples/rmarkdown_practical.Rmd">Rmarkdown source file</a> and <a href="data/examples/rmarkdown_practical.pdf">pdf output</a></p>
 <div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-10"></span>
-<img src="images/lter_penguins.png" alt="Happy coding" width="20%" />
+<img src="images/lter_penguins.png" alt="Happy coding" width="50%" />
 <p class="caption">
 Figure 2.1: Happy coding
 </p>

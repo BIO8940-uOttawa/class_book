@@ -1,4 +1,5 @@
 fig:unnamed-chunk-10
+fig:unnamed-chunk-11
 fig:unnamed-chunk-17
 fig:unnamed-chunk-18
 text-editor-or-ide
@@ -7,13 +8,11 @@ introduction-to-rmarkdown
 practical
 context
 questions
-examples
 introduction-to-github-with-r
 practical-1
 context-1
 information-of-the-data
 questions-1
-happy-github-ing
 refresher-on-glm
 introduction-to-linear-mixed-models
 practical-2

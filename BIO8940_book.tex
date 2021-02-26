@@ -239,7 +239,7 @@
 \makeatother
 \subtitle{Work in Progress}
 \author{Julien Martin}
-\date{17-02-2021}
+\date{26-02-2021}
 
 \begin{document}
 \maketitle
@@ -625,6 +625,7 @@ For this exercise, we're gonna use the \texttt{penguins} dataset.
 \NormalTok{The data were collected in }\BaseNTok{`r length(unique(penguins$island))`}\NormalTok{ islands of the Palmer archipelago in Antarctica.}
 
 \NormalTok{The mean of all traits that were measured on the penguins are:}
+
 \BaseNTok{```\{r echo = FALSE\}}
 \BaseNTok{penguins %>%}
 \BaseNTok{  group_by(species) %>%}
@@ -640,9 +641,9 @@ For this exercise, we're gonna use the \texttt{penguins} dataset.
 \FunctionTok{## Graphical exploration}
 
 \NormalTok{A histogram of body mass per species:}
-\BaseNTok{```\{r, fig.cap="Distribution of body mass by species of penguins"\}}
-\BaseNTok{penguins %>%}
-\BaseNTok{  ggplot() +}
+
+\BaseNTok{```\{r, fig.cap = "Distribution of body mass by species of penguins"\}}
+\BaseNTok{  ggplot(data = penguins) +}
 \BaseNTok{  aes(x = body_mass_g) +}
 \BaseNTok{  geom_histogram(aes(fill = species),}
 \BaseNTok{                 alpha = 0.5,}
@@ -656,13 +657,24 @@ For this exercise, we're gonna use the \texttt{penguins} dataset.
 \end{Highlighting}
 \end{Shaded}
 
-\textbf{7)} In another section, entitled `Linear regression', fit a model of bill length as a function of body size (flipper length), body mass and sex. Obtain the output and graphically evaluate the assumptions of the model.
+\textbf{7)} In another section, entitled \emph{Linear regression}, fit a model of bill length as a function of body size (flipper length), body mass and sex. Obtain the output and graphically evaluate the assumptions of the model. As reminder here is how you fit a linear regression.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BaseNTok{```\{r\}}
+\BaseNTok{model <- lm(Y ~  X1 + X2, data = data)}
+\BaseNTok{summary(model)}
+\BaseNTok{plot(model)}
+\BaseNTok{```}
+\end{Highlighting}
+\end{Shaded}
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \FunctionTok{## Linear regression}
 
 \NormalTok{And here is a nice model with graphical output}
+
 \BaseNTok{```\{r, fig.cap = "Checking assumptions of the model"\}}
 \BaseNTok{m1 <- lm(bill_length_mm ~  flipper_length_mm + body_mass_g + sex, data = penguins)}
 \BaseNTok{summary(m1)}
@@ -691,14 +703,15 @@ For this exercise, we're gonna use the \texttt{penguins} dataset.
 
 \textbf{10)} Build your report in html, pdf and docx format. 🎉
 
-\hypertarget{examples}{%
-\subsection{Examples}\label{examples}}
+\hypertarget{example-of-output}{%
+\subsection*{Example of output}\label{example-of-output}}
+\addcontentsline{toc}{subsection}{Example of output}
 
-You can see an example of the \href{data/examples/rmarkdown_practical.Rmd}{Rmarkdown} and \href{data/examples/rmarkdown_practical.pdf}{pdf} output \href{data/examples}{here}
+You can see an example of the \href{data/examples/rmarkdown_practical.Rmd}{Rmarkdown source file} and \href{data/examples/rmarkdown_practical.pdf}{pdf output}
 
 \begin{figure}
 
-{\centering \includegraphics[width=0.2\linewidth]{images/lter_penguins} 
+{\centering \includegraphics[width=0.5\linewidth]{images/lter_penguins} 
 
 }
 
@@ -807,10 +820,14 @@ For this exercise, we're gonna use the \texttt{penguins} dataset.
 
 You have successfully used all the essential tools of \texttt{git} 🎉 . You are really to explore 🕵 and discover its power 💪
 
-\hypertarget{happy-github-ing}{%
-\subsection{Happy git(hub)-ing}\label{happy-github-ing}}
+\begin{figure}
 
-\begin{center}\includegraphics[width=0.2\linewidth]{images/github_ninja} \end{center}
+{\centering \includegraphics[width=0.3\linewidth]{images/github_ninja} 
+
+}
+
+\caption{Happy git(hub)-ing}\label{fig:unnamed-chunk-11}
+\end{figure}
 
 \hypertarget{part-statistics}{%
 \part{Statistics}\label{part-statistics}}

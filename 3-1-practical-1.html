@@ -156,7 +156,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.1" data-path="2-1-practical.html"><a href="2-1-practical.html"><i class="fa fa-check"></i><b>2.1</b> Practical</a><ul>
 <li class="chapter" data-level="2.1.1" data-path="2-1-practical.html"><a href="2-1-practical.html#context"><i class="fa fa-check"></i><b>2.1.1</b> Context</a></li>
 <li class="chapter" data-level="2.1.2" data-path="2-1-practical.html"><a href="2-1-practical.html#questions"><i class="fa fa-check"></i><b>2.1.2</b> Questions</a></li>
-<li class="chapter" data-level="2.1.3" data-path="2-1-practical.html"><a href="2-1-practical.html#examples"><i class="fa fa-check"></i><b>2.1.3</b> Examples</a></li>
+<li class="chapter" data-level="" data-path="2-1-practical.html"><a href="2-1-practical.html#example-of-output"><i class="fa fa-check"></i>Example of output</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="3-introduction-to-github-with-r.html"><a href="3-introduction-to-github-with-r.html"><i class="fa fa-check"></i><b>3</b> Introduction to github with R</a><ul>
@@ -164,7 +164,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.1.1" data-path="3-1-practical-1.html"><a href="3-1-practical-1.html#context-1"><i class="fa fa-check"></i><b>3.1.1</b> Context</a></li>
 <li class="chapter" data-level="3.1.2" data-path="3-1-practical-1.html"><a href="3-1-practical-1.html#information-of-the-data"><i class="fa fa-check"></i><b>3.1.2</b> Information of the data</a></li>
 <li class="chapter" data-level="3.1.3" data-path="3-1-practical-1.html"><a href="3-1-practical-1.html#questions-1"><i class="fa fa-check"></i><b>3.1.3</b> Questions</a></li>
-<li class="chapter" data-level="3.1.4" data-path="3-1-practical-1.html"><a href="3-1-practical-1.html#happy-github-ing"><i class="fa fa-check"></i><b>3.1.4</b> Happy git(hub)-ing</a></li>
 </ul></li>
 </ul></li>
 <li class="part"><span><b>II Statistics</b></span></li>
@@ -223,9 +222,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>These data have been collected and shared by <a href="https://www.uaf.edu/cfos/people/faculty/detail/kristen-gorman.php">Dr. Kristen Gorman</a> and <a href="https://pal.lternet.edu/">Palmer Station, Antarctica LTER</a>.</p>
 <p>The package was built by Drs Allison Horst and Alison Hill, check out the <a href="https://allisonhorst.github.io/palmerpenguins/">official website</a>.</p>
 <p>The package <code>palmerpenguins</code> has two datasets.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="3-1-practical-1.html#cb10-1"></a><span class="kw">library</span>(palmerpenguins)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="3-1-practical-1.html#cb11-1"></a><span class="kw">library</span>(palmerpenguins)</span></code></pre></div>
 <p>The dataset <code>penguins</code> is a simplified version of the raw data; see <code>?penguins</code> for more info:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="3-1-practical-1.html#cb11-1"></a><span class="kw">head</span>(penguins)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="3-1-practical-1.html#cb12-1"></a><span class="kw">head</span>(penguins)</span></code></pre></div>
 <pre><code>## # A tibble: 6 x 8
 ##   species island bill_length_mm bill_depth_mm flipper_length_… body_mass_g sex  
 ##   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;            &lt;int&gt;       &lt;int&gt; &lt;fct&gt;
@@ -237,7 +236,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 6 Adelie  Torge…           39.3          20.6              190        3650 male 
 ## # … with 1 more variable: year &lt;int&gt;</code></pre>
 <p>The other dataset <code>penguins_raw</code> has the raw data; see <code>?penguins_raw</code> for more info:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="3-1-practical-1.html#cb13-1"></a><span class="kw">head</span>(penguins_raw)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="3-1-practical-1.html#cb14-1"></a><span class="kw">head</span>(penguins_raw)</span></code></pre></div>
 <pre><code>## # A tibble: 6 x 17
 ##   studyName `Sample Number` Species Region Island Stage `Individual ID`
 ##   &lt;chr&gt;               &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;          
@@ -268,10 +267,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><strong>11)</strong> On github, create a pull request to merge the 2 different branches.</p>
 <p><strong>12)</strong> Check and accep the pull request to merge the 2 branches.</p>
 <p>You have successfully used all the essential tools of <code>git</code> 🎉 . You are really to explore 🕵 and discover its power 💪</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-11"></span>
+<img src="images/github_ninja.jpg" alt="Happy git(hub)-ing" width="30%" />
+<p class="caption">
+Figure 3.1: Happy git(hub)-ing
+</p>
 </div>
-<div id="happy-github-ing" class="section level3">
-<h3><span class="header-section-number">3.1.4</span> Happy git(hub)-ing</h3>
-<p><img src="images/github_ninja.jpg" width="20%" style="display: block; margin: auto;" /></p>
 
 </div>
 </div>
