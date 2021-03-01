@@ -280,16 +280,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="exer">
 <div class="sourceCode" id="cb7"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb7-1"><a href="2-1-practical.html#cb7-1"></a><span class="fu">## Numerical exploration</span></span>
 <span id="cb7-2"><a href="2-1-practical.html#cb7-2"></a></span>
-<span id="cb7-3"><a href="2-1-practical.html#cb7-3"></a>There are <span class="bn">`r nrow(penguins)`</span> penguins in the dataset, and <span class="bn">`r length(unique(penguins$species))`</span> different species.</span>
-<span id="cb7-4"><a href="2-1-practical.html#cb7-4"></a>The data were collected in <span class="bn">`r length(unique(penguins$island))`</span> islands of the Palmer archipelago in Antarctica.</span>
-<span id="cb7-5"><a href="2-1-practical.html#cb7-5"></a></span>
-<span id="cb7-6"><a href="2-1-practical.html#cb7-6"></a>The mean of all traits that were measured on the penguins are:</span>
+<span id="cb7-3"><a href="2-1-practical.html#cb7-3"></a>There are <span class="bn">`r nrow(penguins)`</span> penguins in the dataset,</span>
+<span id="cb7-4"><a href="2-1-practical.html#cb7-4"></a>and <span class="bn">`r length(unique(penguins$species))`</span> different species.</span>
+<span id="cb7-5"><a href="2-1-practical.html#cb7-5"></a>The data were collected in <span class="bn">`r length(unique(penguins$island))`</span></span>
+<span id="cb7-6"><a href="2-1-practical.html#cb7-6"></a>islands of the Palmer archipelago in Antarctica.</span>
 <span id="cb7-7"><a href="2-1-practical.html#cb7-7"></a></span>
-<span id="cb7-8"><a href="2-1-practical.html#cb7-8"></a><span class="bn">```{r echo = FALSE}</span></span>
-<span id="cb7-9"><a href="2-1-practical.html#cb7-9"></a><span class="bn">penguins %&gt;%</span></span>
-<span id="cb7-10"><a href="2-1-practical.html#cb7-10"></a><span class="bn">  group_by(species) %&gt;%</span></span>
-<span id="cb7-11"><a href="2-1-practical.html#cb7-11"></a><span class="bn">  summarize(across(where(is.numeric), mean, na.rm = TRUE))</span></span>
-<span id="cb7-12"><a href="2-1-practical.html#cb7-12"></a><span class="bn">```</span></span></code></pre></div>
+<span id="cb7-8"><a href="2-1-practical.html#cb7-8"></a>The mean of all traits that were measured on the penguins are:</span>
+<span id="cb7-9"><a href="2-1-practical.html#cb7-9"></a></span>
+<span id="cb7-10"><a href="2-1-practical.html#cb7-10"></a><span class="bn">```{r echo = FALSE}</span></span>
+<span id="cb7-11"><a href="2-1-practical.html#cb7-11"></a><span class="bn">penguins %&gt;%</span></span>
+<span id="cb7-12"><a href="2-1-practical.html#cb7-12"></a><span class="bn">  group_by(species) %&gt;%</span></span>
+<span id="cb7-13"><a href="2-1-practical.html#cb7-13"></a><span class="bn">  summarize(across(where(is.numeric), mean, na.rm = TRUE))</span></span>
+<span id="cb7-14"><a href="2-1-practical.html#cb7-14"></a><span class="bn">```</span></span></code></pre></div>
 </div>
 <p><strong>6)</strong> In another section, entitled ‘Graphical exploration’, build a figure with 3 superimposed histograms, each one corresponding to the body mass of a species.</p>
 <div class="exer">
