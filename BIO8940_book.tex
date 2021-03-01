@@ -1196,7 +1196,6 @@ Run a few diagnostic plots before we look at the answers. In diagnostic plots, w
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
-\tightlist
 \item
   Linearity of the relation between covariates and the response
 \item
@@ -1204,7 +1203,7 @@ Run a few diagnostic plots before we look at the answers. In diagnostic plots, w
 \item
   Residual have a Gaussian distribution
 \item
-  Homscedasticty (variance of residuals is constant across covariates)
+  Homoscedasticty (variance of residuals is constant across covariates)
 \item
   Random effects have a Gaussian distribution
 \item
@@ -1265,8 +1264,19 @@ This is checked with:
 \end{Highlighting}
 \end{Shaded}
 
+\begin{figure}
+\centering
 \includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-15-1.pdf}
-5. histogram of the predictions for the random effects (BLUPs)
+\caption{\label{fig:unnamed-chunk-15}Residuals by fitted values for model m\_2 to check homoscedasticity}
+\end{figure}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  histogram of the predictions for the random effects (BLUPs)
+\end{enumerate}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1393,7 +1403,7 @@ In our first model among-individual variance was zero, so R was zero. If we have
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{m_}\DecValTok{3}\NormalTok{ <-}\StringTok{ }\KeywordTok{lmer}\NormalTok{(}
-\NormalTok{  aggression }\OperatorTok{~}\StringTok{ }\NormalTok{opp_size }\OperatorTok{+}\StringTok{ }\KeywordTok{scale}\NormalTok{(body_size)}
+\NormalTok{  aggression }\OperatorTok{~}\StringTok{ }\NormalTok{opp_size }\OperatorTok{+}\StringTok{ }\KeywordTok{scale}\NormalTok{(body_size, }\DataTypeTok{center =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{scale =} \OtherTok{TRUE}\NormalTok{)}
               \OperatorTok{+}\StringTok{ }\KeywordTok{scale}\NormalTok{(assay_rep, }\DataTypeTok{scale =} \OtherTok{FALSE}\NormalTok{) }\OperatorTok{+}\StringTok{ }\NormalTok{block}
               \OperatorTok{+}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{|}\StringTok{ }\NormalTok{ID),}
   \DataTypeTok{data =}\NormalTok{ unicorns)}
@@ -1405,8 +1415,8 @@ In our first model among-individual variance was zero, so R was zero. If we have
 ## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
 ## lmerModLmerTest]
 ## Formula: 
-## aggression ~ opp_size + scale(body_size) + scale(assay_rep, scale = FALSE) +  
-##     block + (1 | ID)
+## aggression ~ opp_size + scale(body_size, center = TRUE, scale = TRUE) +  
+##     scale(assay_rep, scale = FALSE) + block + (1 | ID)
 ##    Data: unicorns
 ## 
 ## REML criterion at convergence: 1136.5
@@ -1422,27 +1432,27 @@ In our first model among-individual variance was zero, so R was zero. If we have
 ## Number of obs: 480, groups:  ID, 80
 ## 
 ## Fixed effects:
-##                                  Estimate Std. Error        df t value Pr(>|t|)
-## (Intercept)                       9.00181    0.03907  78.07315 230.395   <2e-16
-## opp_size                          1.05141    0.04281 396.99857  24.562   <2e-16
-## scale(body_size)                  0.03310    0.03896  84.21144   0.850    0.398
-## scale(assay_rep, scale = FALSE)  -0.05783    0.04281 396.99857  -1.351    0.177
-## block                            -0.02166    0.06955 397.00209  -0.311    0.756
-##                                    
-## (Intercept)                     ***
-## opp_size                        ***
-## scale(body_size)                   
-## scale(assay_rep, scale = FALSE)    
-## block                              
+##                                                Estimate Std. Error        df
+## (Intercept)                                     9.00181    0.03907  78.07315
+## opp_size                                        1.05141    0.04281 396.99857
+## scale(body_size, center = TRUE, scale = TRUE)   0.03310    0.03896  84.21144
+## scale(assay_rep, scale = FALSE)                -0.05783    0.04281 396.99857
+## block                                          -0.02166    0.06955 397.00209
+##                                               t value Pr(>|t|)    
+## (Intercept)                                   230.395   <2e-16 ***
+## opp_size                                       24.562   <2e-16 ***
+## scale(body_size, center = TRUE, scale = TRUE)   0.850    0.398    
+## scale(assay_rep, scale = FALSE)                -1.351    0.177    
+## block                                          -0.311    0.756    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Correlation of Fixed Effects:
-##             (Intr) opp_sz scl(_) s(_s=F
-## opp_size     0.000                     
-## scl(bdy_sz)  0.000  0.000              
-## s(_,s=FALSE  0.000 -0.100  0.000       
-## block        0.000  0.000  0.002  0.000
+##             (Intr) opp_sz sc=Ts=T s(_s=F
+## opp_size     0.000                      
+## s(_,c=TRs=T  0.000  0.000               
+## s(_,s=FALSE  0.000 -0.100  0.000        
+## block        0.000  0.000  0.002   0.000
 \end{verbatim}
 
 So we'd probably calculate R using the individual and residual variance simply as:
@@ -1535,6 +1545,60 @@ Include a random effect of ID as before and maybe a fixed effect of block, just 
 
 Summarise and test the random effect.
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(lmer_size)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
+## Formula: body_size ~ block + (1 | ID)
+##    Data: unicorns
+## 
+## REML criterion at convergence: 3460.7
+## 
+## Scaled residuals: 
+##      Min       1Q   Median       3Q      Max 
+## -1.80452 -0.71319  0.00718  0.70280  1.81747 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev.
+##  ID       (Intercept) 936.01   30.594  
+##  Residual              34.32    5.858  
+## Number of obs: 480, groups:  ID, 80
+## 
+## Fixed effects:
+##             Estimate Std. Error       df t value Pr(>|t|)    
+## (Intercept) 252.5031     3.4310  79.0000  73.595   <2e-16 ***
+## block        -0.1188     0.5348 399.0000  -0.222    0.824    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##       (Intr)
+## block 0.000
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ranova}\NormalTok{(lmer_size)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## ANOVA-like table for random-effects: Single term deletions
+## 
+## Model:
+## body_size ~ block + (1 | ID)
+##          npar  logLik    AIC    LRT Df Pr(>Chisq)    
+## <none>      4 -1730.4 3468.7                         
+## (1 | ID)    3 -2325.6 4657.1 1190.4  1  < 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
 \begin{rmdcode}
 \textbf{What might you conclude, and why would this be foolish?}
 \end{rmdcode}
@@ -1550,10 +1614,60 @@ We can prune the data to the two actual observations per unicorns by just select
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{unicorns2 <-}\StringTok{ }\NormalTok{unicorns[unicorns}\OperatorTok{$}\NormalTok{assay_rep }\OperatorTok{==}\StringTok{ }\DecValTok{1}\NormalTok{, ]}
+
 \NormalTok{lmer_size2 <-}\StringTok{ }\KeywordTok{lmer}\NormalTok{(body_size }\OperatorTok{~}\StringTok{   }\NormalTok{block }\OperatorTok{+}\StringTok{  }\NormalTok{(}\DecValTok{1} \OperatorTok{|}\StringTok{ }\NormalTok{ID),}
                 \DataTypeTok{data =}\NormalTok{ unicorns2)}
+\KeywordTok{summary}\NormalTok{(lmer_size2)}
 \end{Highlighting}
 \end{Shaded}
+
+\begin{verbatim}
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
+## Formula: body_size ~ block + (1 | ID)
+##    Data: unicorns2
+## 
+## REML criterion at convergence: 1373.4
+## 
+## Scaled residuals: 
+##      Min       1Q   Median       3Q      Max 
+## -1.54633 -0.56198  0.01319  0.56094  1.42095 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev.
+##  ID       (Intercept) 912.84   30.213  
+##  Residual              57.78    7.601  
+## Number of obs: 160, groups:  ID, 80
+## 
+## Fixed effects:
+##             Estimate Std. Error       df t value Pr(>|t|)    
+## (Intercept) 252.5031     3.4310  79.0000  73.595   <2e-16 ***
+## block        -0.1188     1.2019  79.0000  -0.099    0.922    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##       (Intr)
+## block 0.000
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ranova}\NormalTok{(lmer_size2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## ANOVA-like table for random-effects: Single term deletions
+## 
+## Model:
+## body_size ~ block + (1 | ID)
+##          npar  logLik    AIC    LRT Df Pr(>Chisq)    
+## <none>      4 -686.68 1381.3                         
+## (1 | ID)    3 -771.93 1549.9 170.51  1  < 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
 
 Summarise and test your random effect and you'll see the qualitative conclusions will actually be very similar using the pruned data set. Of course this won't generallty but be true, so just be careful. Mixed models are intended to help you model repeated measures data with non-independence, but they won't get you out of trouble if you mis-represent the true structure of observations on your dependent variable.
 
@@ -1566,7 +1680,7 @@ Summarise and test your random effect and you'll see the qualitative conclusions
 
 }
 
-\caption{The superb unicorn}\label{fig:unnamed-chunk-25}
+\caption{The superb unicorn}\label{fig:unnamed-chunk-26}
 \end{figure}
 
 \hypertarget{introduction-to-glmm}{%
@@ -1714,8 +1828,8 @@ Now we check replication for each genotype (columns) within each population (row
 
 \begin{figure}
 \centering
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-31-1.pdf}
-\caption{\label{fig:unnamed-chunk-31}A truly useless plot no one can understand}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-32-1.pdf}
+\caption{\label{fig:unnamed-chunk-32}A truly useless plot no one can understand}
 \end{figure}
 
 \begin{enumerate}
@@ -1778,8 +1892,8 @@ I usually like to start with a relatively simple overall plot of the data, disre
 
 \begin{figure}
 \centering
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-34-1.pdf}
-\caption{\label{fig:unnamed-chunk-34}Number of fruits (log + 1) as a function of treatments}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-35-1.pdf}
+\caption{\label{fig:unnamed-chunk-35}Number of fruits (log + 1) as a function of treatments}
 \end{figure}
 
 \begin{rmdcode}
@@ -1814,7 +1928,7 @@ Now time to plot it
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-37-1.pdf}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-38-1.pdf}
 
 We could also calculate the variance for each genotype × treatment combination and provide a statistical summary of these variances.
 This reveals substantial variation among the sample variances on the transformed data. In addition to heterogeneous variances across groups, Figure 1 reveals many zeroes in groups, and some groups with a mean and variance of zero, further suggesting we need a non-normal error distribution, and perhaps something other than a Poisson distribution.
@@ -1901,8 +2015,8 @@ Now we can plot them.
 
 \begin{figure}
 \centering
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-41-1.pdf}
-\caption{\label{fig:unnamed-chunk-41}Graphical evaluation of distribution to use}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-42-1.pdf}
+\caption{\label{fig:unnamed-chunk-42}Graphical evaluation of distribution to use}
 \end{figure}
 
 Same with ggplot
@@ -1938,7 +2052,7 @@ Same with ggplot
 ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 \end{verbatim}
 
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-42-1.pdf}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-43-1.pdf}
 
 These fits are not rigorous statistical tests --- they violate a variety of assumptions of linear regression (e.g.~constant variance, independence), but they are good enough to give us an initial guess about what distributions we should use.
 
@@ -1981,8 +2095,8 @@ These fits are not rigorous statistical tests --- they violate a variety of assu
 
 \begin{figure}
 \centering
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-43-1.pdf}
-\caption{\label{fig:unnamed-chunk-43}Graphical evaluation of distribution to use including quadratic effect}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-44-1.pdf}
+\caption{\label{fig:unnamed-chunk-44}Graphical evaluation of distribution to use including quadratic effect}
 \end{figure}
 
 \hypertarget{plotting-the-response-vs-treatments}{%
@@ -2004,8 +2118,8 @@ Just to avoid surprises
 
 \begin{figure}
 \centering
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-44-1.pdf}
-\caption{\label{fig:unnamed-chunk-44}Fruit production by treatments by population}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-45-1.pdf}
+\caption{\label{fig:unnamed-chunk-45}Fruit production by treatments by population}
 \end{figure}
 
 \begin{Shaded}
@@ -2021,8 +2135,8 @@ Just to avoid surprises
 
 \begin{figure}
 \centering
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-45-1.pdf}
-\caption{\label{fig:unnamed-chunk-45}Fruit production by genotype by treatments}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-46-1.pdf}
+\caption{\label{fig:unnamed-chunk-46}Fruit production by genotype by treatments}
 \end{figure}
 
 \hypertarget{fitting-group-wise-glm}{%
@@ -2047,8 +2161,8 @@ This should result in reasonable variation among treatment effects. We first fit
 
 \begin{figure}
 \centering
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-46-1.pdf}
-\caption{\label{fig:unnamed-chunk-46}Model coefficients for GLM fits on each genotype}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-47-1.pdf}
+\caption{\label{fig:unnamed-chunk-47}Model coefficients for GLM fits on each genotype}
 \end{figure}
 
 Three genotypes (5, 6, 34) have extreme coefficients (Fig. 5). A mixed model assumes that the underlying random effects are normally distributed, although we shouldn't take these outliers too seriously at this point --- we are not actually plotting the random effects, or even estimates of random effects (which are not themselves guaranteed to be normally distributed), but rather separate estimates for each group.
@@ -2064,7 +2178,7 @@ Create a plotting function for Q-Q plots of these coefficients to visualize the 
 ## Using  as id variables
 \end{verbatim}
 
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-47-1.pdf}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-48-1.pdf}
 We see that these extreme coefficients fall far outside a normal error distribution. We shouldn't take these outliers too seriously at this point --- we are not actually plotting the random effects, or even estimates of random effects, but rather separate estimates for each group.
 Especially if these groups have relatively small sample sizes, the estimates may eventually be ``shrunk'' closer to the mean when we do the mixed model.
 We should nonetheless take care to see if the coefficients for these genotypes from the GLMM are still outliers, and take the same precautions as we usually do for outliers. For example, we can look back at the original data to see if there is something weird about the way those genotypes were collected, or try re-running the analysis without those genotypes to see if the results are robust.
@@ -2477,8 +2591,8 @@ We can also inspect the random effects estimates themselves (in proper statistic
 
 \begin{figure}
 \centering
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-62-1.pdf}
-\caption{\label{fig:unnamed-chunk-62}Distribution of BLUPs for genotypes and populations}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-63-1.pdf}
+\caption{\label{fig:unnamed-chunk-63}Distribution of BLUPs for genotypes and populations}
 \end{figure}
 
 As expected from the similarity of the variance estimates, the population-level estimates (the only shared component) do not differ much between the two models. There is a hint of regional differentiation --- the Spanish populations have higher fruit sets than the Swedish and Dutch populations. Genotype 34 again looks a little bit unusual.
@@ -2590,8 +2704,8 @@ In addition, we can check the normality of the random effects and find they are 
 
 \begin{figure}
 \centering
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-65-1.pdf}
-\caption{\label{fig:unnamed-chunk-65}Q-Q plot of BLUPs from model mp5}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-66-1.pdf}
+\caption{\label{fig:unnamed-chunk-66}Q-Q plot of BLUPs from model mp5}
 \end{figure}
 
 \hypertarget{conclusions}{%
@@ -2620,7 +2734,7 @@ Our final model includes fixed effects of nutrients and clipping, as well as the
 
 }
 
-\caption{A GLMM character}\label{fig:unnamed-chunk-67}
+\caption{A GLMM character}\label{fig:unnamed-chunk-68}
 \end{figure}
 
 \backmatter
