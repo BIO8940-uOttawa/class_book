@@ -242,7 +242,7 @@
 \makeatother
 \subtitle{Work in Progress}
 \author{Julien Martin}
-\date{08-03-2021}
+\date{09-03-2021}
 
 \begin{document}
 \maketitle
@@ -1890,6 +1890,16 @@ However, as in all GLMMs where the scale parameter is treated as fixed and devia
 
 I usually like to start with a relatively simple overall plot of the data, disregarding the random factors, just to see what's going on. For reasons to be discussed below, we choose to look at the data on the log (or log(1 + x) scale. Let's plot either box-and-whisker plots (useful summaries) or dot plots (more detailed, good for seeing if we missed anything).
 
+\begin{figure}
+\centering
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-35-1.pdf}
+\caption{\label{fig:unnamed-chunk-35}Number of fruits (log + 1) as a function of treatments}
+\end{figure}
+
+\begin{rmdcode}
+\textbf{Exercise} generate these plots and figure out how they work before continuing. Try conditioning/faceting on population rather than region: for facet\_wrap you might want to take out the nrow=1 specification. If you want try reorder the subplots by overall mean fruit set and/or colour the points according to the region they come from.
+\end{rmdcode}
+
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{p1 <-}\StringTok{ }\KeywordTok{qplot}\NormalTok{(}
@@ -1911,16 +1921,6 @@ I usually like to start with a relatively simple overall plot of the data, disre
 \end{Highlighting}
 \end{Shaded}
 
-\begin{figure}
-\centering
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-35-1.pdf}
-\caption{\label{fig:unnamed-chunk-35}Number of fruits (log + 1) as a function of treatments}
-\end{figure}
-
-\begin{rmdcode}
-\textbf{Exercise} generate these plots and figure out how they work before continuing. Try conditioning/faceting on population rather than region: for facet\_wrap you might want to take out the nrow=1 specification. If you want try reorder the subplots by overall mean fruit set and/or colour the points according to the region they come from.
-\end{rmdcode}
-
 \hypertarget{choose-an-error-distribution}{%
 \subsection{Choose an error distribution}\label{choose-an-error-distribution}}
 
@@ -1933,7 +1933,7 @@ First we define a new factor that represents every combination of genotype and t
 \NormalTok{dat_tf <-}\StringTok{ }\NormalTok{dat_tf }\OperatorTok{%>%}
 \StringTok{  }\KeywordTok{mutate}\NormalTok{(}
     \DataTypeTok{gna =} \KeywordTok{interaction}\NormalTok{(gen, nutrient, amd),}
-    \DataTypeTok{gna =} \KeywordTok{reorder}\NormalTok{(gna, total.fruits, mean)}
+    \DataTypeTok{gna =} \KeywordTok{fct_reorder}\NormalTok{(gna, total.fruits, mean)}
 \NormalTok{  )}
 \end{Highlighting}
 \end{Shaded}
@@ -1949,7 +1949,7 @@ Now time to plot it
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-38-1.pdf}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-39-1.pdf}
 
 We could also calculate the variance for each genotype × treatment combination and provide a statistical summary of these variances.
 This reveals substantial variation among the sample variances on the transformed data. In addition to heterogeneous variances across groups, Figure 1 reveals many zeroes in groups, and some groups with a mean and variance of zero, further suggesting we need a non-normal error distribution, and perhaps something other than a Poisson distribution.
@@ -2036,8 +2036,8 @@ Now we can plot them.
 
 \begin{figure}
 \centering
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-42-1.pdf}
-\caption{\label{fig:unnamed-chunk-42}Graphical evaluation of distribution to use}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-43-1.pdf}
+\caption{\label{fig:unnamed-chunk-43}Graphical evaluation of distribution to use}
 \end{figure}
 
 Same with ggplot
@@ -2073,7 +2073,7 @@ Same with ggplot
 ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 \end{verbatim}
 
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-43-1.pdf}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-44-1.pdf}
 
 These fits are not rigorous statistical tests --- they violate a variety of assumptions of linear regression (e.g.~constant variance, independence), but they are good enough to give us an initial guess about what distributions we should use.
 
@@ -2116,8 +2116,8 @@ These fits are not rigorous statistical tests --- they violate a variety of assu
 
 \begin{figure}
 \centering
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-44-1.pdf}
-\caption{\label{fig:unnamed-chunk-44}Graphical evaluation of distribution to use including quadratic effect}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-45-1.pdf}
+\caption{\label{fig:unnamed-chunk-45}Graphical evaluation of distribution to use including quadratic effect}
 \end{figure}
 
 \hypertarget{plotting-the-response-vs-treatments}{%
@@ -2139,8 +2139,8 @@ Just to avoid surprises
 
 \begin{figure}
 \centering
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-45-1.pdf}
-\caption{\label{fig:unnamed-chunk-45}Fruit production by treatments by population}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-46-1.pdf}
+\caption{\label{fig:unnamed-chunk-46}Fruit production by treatments by population}
 \end{figure}
 
 \begin{Shaded}
@@ -2156,8 +2156,8 @@ Just to avoid surprises
 
 \begin{figure}
 \centering
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-46-1.pdf}
-\caption{\label{fig:unnamed-chunk-46}Fruit production by genotype by treatments}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-47-1.pdf}
+\caption{\label{fig:unnamed-chunk-47}Fruit production by genotype by treatments}
 \end{figure}
 
 \hypertarget{fitting-group-wise-glm}{%
@@ -2182,8 +2182,8 @@ This should result in reasonable variation among treatment effects. We first fit
 
 \begin{figure}
 \centering
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-47-1.pdf}
-\caption{\label{fig:unnamed-chunk-47}Model coefficients for GLM fits on each genotype}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-48-1.pdf}
+\caption{\label{fig:unnamed-chunk-48}Model coefficients for GLM fits on each genotype}
 \end{figure}
 
 Three genotypes (5, 6, 34) have extreme coefficients (Fig. 5). A mixed model assumes that the underlying random effects are normally distributed, although we shouldn't take these outliers too seriously at this point --- we are not actually plotting the random effects, or even estimates of random effects (which are not themselves guaranteed to be normally distributed), but rather separate estimates for each group.
@@ -2199,7 +2199,7 @@ Create a plotting function for Q-Q plots of these coefficients to visualize the 
 ## Using  as id variables
 \end{verbatim}
 
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-48-1.pdf}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-49-1.pdf}
 We see that these extreme coefficients fall far outside a normal error distribution. We shouldn't take these outliers too seriously at this point --- we are not actually plotting the random effects, or even estimates of random effects, but rather separate estimates for each group.
 Especially if these groups have relatively small sample sizes, the estimates may eventually be ``shrunk'' closer to the mean when we do the mixed model.
 We should nonetheless take care to see if the coefficients for these genotypes from the GLMM are still outliers, and take the same precautions as we usually do for outliers. For example, we can look back at the original data to see if there is something weird about the way those genotypes were collected, or try re-running the analysis without those genotypes to see if the results are robust.
@@ -2612,8 +2612,8 @@ We can also inspect the random effects estimates themselves (in proper statistic
 
 \begin{figure}
 \centering
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-63-1.pdf}
-\caption{\label{fig:unnamed-chunk-63}Distribution of BLUPs for genotypes and populations}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-64-1.pdf}
+\caption{\label{fig:unnamed-chunk-64}Distribution of BLUPs for genotypes and populations}
 \end{figure}
 
 As expected from the similarity of the variance estimates, the population-level estimates (the only shared component) do not differ much between the two models. There is a hint of regional differentiation --- the Spanish populations have higher fruit sets than the Swedish and Dutch populations. Genotype 34 again looks a little bit unusual.
@@ -2725,8 +2725,8 @@ In addition, we can check the normality of the random effects and find they are 
 
 \begin{figure}
 \centering
-\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-66-1.pdf}
-\caption{\label{fig:unnamed-chunk-66}Q-Q plot of BLUPs from model mp5}
+\includegraphics{BIO8940_book_files/figure-latex/unnamed-chunk-67-1.pdf}
+\caption{\label{fig:unnamed-chunk-67}Q-Q plot of BLUPs from model mp5}
 \end{figure}
 
 \hypertarget{conclusions}{%
@@ -2755,7 +2755,7 @@ Our final model includes fixed effects of nutrients and clipping, as well as the
 
 }
 
-\caption{A GLMM character}\label{fig:unnamed-chunk-68}
+\caption{A GLMM character}\label{fig:unnamed-chunk-69}
 \end{figure}
 
 \backmatter

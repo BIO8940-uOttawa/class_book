@@ -329,6 +329,18 @@ Figure 6.1: A truly useless plot no one can understand
 <div id="look-at-overall-patterns-in-data" class="section level3">
 <h3><span class="header-section-number">6.1.4</span> Look at overall patterns in data</h3>
 <p>I usually like to start with a relatively simple overall plot of the data, disregarding the random factors, just to see what’s going on. For reasons to be discussed below, we choose to look at the data on the log (or log(1 + x) scale. Let’s plot either box-and-whisker plots (useful summaries) or dot plots (more detailed, good for seeing if we missed anything).</p>
+<div class="figure"><span id="fig:unnamed-chunk-35"></span>
+<img src="BIO8940_book_files/figure-html/unnamed-chunk-35-1.svg" alt="Number of fruits (log + 1) as a function of treatments" width="672" />
+<p class="caption">
+Figure 6.2: Number of fruits (log + 1) as a function of treatments
+</p>
+</div>
+
+<div class="rmdcode">
+<strong>Exercise</strong> generate these plots and figure out how they work before continuing. Try conditioning/faceting on population rather than region: for facet_wrap you might want to take out the nrow=1 specification. If you want try reorder the subplots by overall mean fruit set and/or colour the points according to the region they come from.
+</div>
+
+<div class="exer">
 <div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="6-1-practical-3.html#cb74-1"></a>p1 &lt;-<span class="st"> </span><span class="kw">qplot</span>(</span>
 <span id="cb74-2"><a href="6-1-practical-3.html#cb74-2"></a>    <span class="kw">interaction</span>(nutrient, amd),</span>
 <span id="cb74-3"><a href="6-1-practical-3.html#cb74-3"></a>    <span class="kw">log</span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>total.fruits),</span>
@@ -345,17 +357,7 @@ Figure 6.1: A truly useless plot no one can understand
 <span id="cb74-14"><a href="6-1-practical-3.html#cb74-14"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">45</span>)) <span class="op">+</span></span>
 <span id="cb74-15"><a href="6-1-practical-3.html#cb74-15"></a><span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Dot plot&quot;</span>)</span>
 <span id="cb74-16"><a href="6-1-practical-3.html#cb74-16"></a>p1 <span class="op">+</span><span class="st"> </span>p2</span></code></pre></div>
-<div class="figure"><span id="fig:unnamed-chunk-35"></span>
-<img src="BIO8940_book_files/figure-html/unnamed-chunk-35-1.svg" alt="Number of fruits (log + 1) as a function of treatments" width="672" />
-<p class="caption">
-Figure 6.2: Number of fruits (log + 1) as a function of treatments
-</p>
 </div>
-
-<div class="rmdcode">
-<strong>Exercise</strong> generate these plots and figure out how they work before continuing. Try conditioning/faceting on population rather than region: for facet_wrap you might want to take out the nrow=1 specification. If you want try reorder the subplots by overall mean fruit set and/or colour the points according to the region they come from.
-</div>
-
 </div>
 <div id="choose-an-error-distribution" class="section level3">
 <h3><span class="header-section-number">6.1.5</span> Choose an error distribution</h3>
@@ -364,14 +366,14 @@ Figure 6.2: Number of fruits (log + 1) as a function of treatments
 <div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="6-1-practical-3.html#cb75-1"></a>dat_tf &lt;-<span class="st"> </span>dat_tf <span class="op">%&gt;%</span></span>
 <span id="cb75-2"><a href="6-1-practical-3.html#cb75-2"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
 <span id="cb75-3"><a href="6-1-practical-3.html#cb75-3"></a>    <span class="dt">gna =</span> <span class="kw">interaction</span>(gen, nutrient, amd),</span>
-<span id="cb75-4"><a href="6-1-practical-3.html#cb75-4"></a>    <span class="dt">gna =</span> <span class="kw">reorder</span>(gna, total.fruits, mean)</span>
+<span id="cb75-4"><a href="6-1-practical-3.html#cb75-4"></a>    <span class="dt">gna =</span> <span class="kw">fct_reorder</span>(gna, total.fruits, mean)</span>
 <span id="cb75-5"><a href="6-1-practical-3.html#cb75-5"></a>  )</span></code></pre></div>
 <p>Now time to plot it</p>
 <div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="6-1-practical-3.html#cb76-1"></a><span class="kw">ggplot</span>(dat_tf, <span class="kw">aes</span>(<span class="dt">x =</span> gna, <span class="dt">y =</span> <span class="kw">log</span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>total.fruits))) <span class="op">+</span></span>
 <span id="cb76-2"><a href="6-1-practical-3.html#cb76-2"></a><span class="st">  </span><span class="kw">geom_boxplot</span>() <span class="op">+</span></span>
 <span id="cb76-3"><a href="6-1-practical-3.html#cb76-3"></a><span class="st">  </span><span class="kw">theme_bw</span>() <span class="op">+</span></span>
 <span id="cb76-4"><a href="6-1-practical-3.html#cb76-4"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">90</span>))</span></code></pre></div>
-<p><img src="BIO8940_book_files/figure-html/unnamed-chunk-38-1.svg" width="672" /></p>
+<p><img src="BIO8940_book_files/figure-html/unnamed-chunk-39-1.svg" width="672" /></p>
 <p>We could also calculate the variance for each genotype × treatment combination and provide a statistical summary of these variances.
 This reveals substantial variation among the sample variances on the transformed data. In addition to heterogeneous variances across groups, Figure 1 reveals many zeroes in groups, and some groups with a mean and variance of zero, further suggesting we need a non-normal error distribution, and perhaps something other than a Poisson distribution.</p>
 <p>We could calculate λ(mean) for each genotype × treatment combination and provide a statistical summary of each group’s λ.</p>
@@ -418,8 +420,8 @@ This reveals substantial variation among the sample variances on the transformed
 <span id="cb81-14"><a href="6-1-practical-3.html#cb81-14"></a>mvec &lt;-<span class="st"> </span><span class="dv">0</span><span class="op">:</span><span class="dv">120</span></span>
 <span id="cb81-15"><a href="6-1-practical-3.html#cb81-15"></a><span class="kw">lines</span>(mvec, <span class="kw">predict</span>(l_fit, mvec), <span class="dt">col =</span> <span class="dv">5</span>)</span>
 <span id="cb81-16"><a href="6-1-practical-3.html#cb81-16"></a><span class="kw">text</span>(<span class="dv">100</span>, <span class="dv">2500</span>, <span class="st">&quot;loess&quot;</span>, <span class="dt">col =</span> <span class="dv">5</span>)</span></code></pre></div>
-<div class="figure"><span id="fig:unnamed-chunk-42"></span>
-<img src="BIO8940_book_files/figure-html/unnamed-chunk-42-1.svg" alt="Graphical evaluation of distribution to use" width="672" />
+<div class="figure"><span id="fig:unnamed-chunk-43"></span>
+<img src="BIO8940_book_files/figure-html/unnamed-chunk-43-1.svg" alt="Graphical evaluation of distribution to use" width="672" />
 <p class="caption">
 Figure 6.3: Graphical evaluation of distribution to use
 </p>
@@ -448,8 +450,8 @@ Figure 6.3: Graphical evaluation of distribution to use
 <span id="cb82-21"><a href="6-1-practical-3.html#cb82-21"></a>    <span class="dt">values =</span> <span class="kw">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;purple&quot;</span>, <span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>)) <span class="op">+</span></span>
 <span id="cb82-22"><a href="6-1-practical-3.html#cb82-22"></a><span class="st">  </span><span class="kw">guides</span>(<span class="dt">fill =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
 <pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<div class="figure"><span id="fig:unnamed-chunk-43"></span>
-<img src="BIO8940_book_files/figure-html/unnamed-chunk-43-1.svg" alt="Graphical evaluation of distribution to use with ggplot" width="672" />
+<div class="figure"><span id="fig:unnamed-chunk-44"></span>
+<img src="BIO8940_book_files/figure-html/unnamed-chunk-44-1.svg" alt="Graphical evaluation of distribution to use with ggplot" width="672" />
 <p class="caption">
 Figure 6.4: Graphical evaluation of distribution to use with ggplot
 </p>
@@ -486,8 +488,8 @@ Figure 6.4: Graphical evaluation of distribution to use with ggplot
 <span id="cb84-22"><a href="6-1-practical-3.html#cb84-22"></a>    <span class="dt">name =</span> <span class="st">&quot;legend&quot;</span>,</span>
 <span id="cb84-23"><a href="6-1-practical-3.html#cb84-23"></a>    <span class="dt">values =</span> <span class="kw">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;purple&quot;</span>, <span class="st">&quot;black&quot;</span>)) <span class="op">+</span></span>
 <span id="cb84-24"><a href="6-1-practical-3.html#cb84-24"></a><span class="st">  </span><span class="kw">guides</span>(<span class="dt">fill =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
-<div class="figure"><span id="fig:unnamed-chunk-44"></span>
-<img src="BIO8940_book_files/figure-html/unnamed-chunk-44-1.svg" alt="Graphical evaluation of distribution to use including quadratic effect" width="672" />
+<div class="figure"><span id="fig:unnamed-chunk-45"></span>
+<img src="BIO8940_book_files/figure-html/unnamed-chunk-45-1.svg" alt="Graphical evaluation of distribution to use including quadratic effect" width="672" />
 <p class="caption">
 Figure 6.5: Graphical evaluation of distribution to use including quadratic effect
 </p>
@@ -503,8 +505,8 @@ Figure 6.5: Graphical evaluation of distribution to use including quadratic effe
 <span id="cb85-5"><a href="6-1-practical-3.html#cb85-5"></a><span class="st">  </span><span class="kw">theme_bw</span>() <span class="op">+</span></span>
 <span id="cb85-6"><a href="6-1-practical-3.html#cb85-6"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">panel.spacing =</span> <span class="kw">unit</span>(<span class="dv">0</span>, <span class="st">&quot;lines&quot;</span>)) <span class="op">+</span></span>
 <span id="cb85-7"><a href="6-1-practical-3.html#cb85-7"></a><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>popu)</span></code></pre></div>
-<div class="figure"><span id="fig:unnamed-chunk-45"></span>
-<img src="BIO8940_book_files/figure-html/unnamed-chunk-45-1.svg" alt="Fruit production by treatments by population" width="672" />
+<div class="figure"><span id="fig:unnamed-chunk-46"></span>
+<img src="BIO8940_book_files/figure-html/unnamed-chunk-46-1.svg" alt="Fruit production by treatments by population" width="672" />
 <p class="caption">
 Figure 6.6: Fruit production by treatments by population
 </p>
@@ -515,8 +517,8 @@ Figure 6.6: Fruit production by treatments by population
 <span id="cb86-4"><a href="6-1-practical-3.html#cb86-4"></a><span class="st">  </span><span class="kw">theme_bw</span>() <span class="op">+</span></span>
 <span id="cb86-5"><a href="6-1-practical-3.html#cb86-5"></a><span class="st">  </span><span class="co">## label_both adds variable name (&#39;nutrient&#39;) to facet labels</span></span>
 <span id="cb86-6"><a href="6-1-practical-3.html#cb86-6"></a><span class="st">  </span><span class="kw">facet_grid</span>(. <span class="op">~</span><span class="st"> </span>nutrient, <span class="dt">labeller =</span> label_both)</span></code></pre></div>
-<div class="figure"><span id="fig:unnamed-chunk-46"></span>
-<img src="BIO8940_book_files/figure-html/unnamed-chunk-46-1.svg" alt="Fruit production by genotype by treatments" width="672" />
+<div class="figure"><span id="fig:unnamed-chunk-47"></span>
+<img src="BIO8940_book_files/figure-html/unnamed-chunk-47-1.svg" alt="Fruit production by genotype by treatments" width="672" />
 <p class="caption">
 Figure 6.7: Fruit production by genotype by treatments
 </p>
@@ -533,8 +535,8 @@ This should result in reasonable variation among treatment effects. We first fit
 <span id="cb87-4"><a href="6-1-practical-3.html#cb87-4"></a>  <span class="dt">family =</span> <span class="st">&quot;poisson&quot;</span>)</span>
 <span id="cb87-5"><a href="6-1-practical-3.html#cb87-5"></a><span class="kw">plot.lmList</span>(glm_lis)</span></code></pre></div>
 <pre><code>## Using grp as id variables</code></pre>
-<div class="figure"><span id="fig:unnamed-chunk-47"></span>
-<img src="BIO8940_book_files/figure-html/unnamed-chunk-47-1.svg" alt="Model coefficients for GLM fits on each genotype" width="672" />
+<div class="figure"><span id="fig:unnamed-chunk-48"></span>
+<img src="BIO8940_book_files/figure-html/unnamed-chunk-48-1.svg" alt="Model coefficients for GLM fits on each genotype" width="672" />
 <p class="caption">
 Figure 6.8: Model coefficients for GLM fits on each genotype
 </p>
@@ -543,8 +545,8 @@ Figure 6.8: Model coefficients for GLM fits on each genotype
 Create a plotting function for Q-Q plots of these coefficients to visualize the departure from normality.</p>
 <div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="6-1-practical-3.html#cb89-1"></a><span class="kw">qqmath.lmList</span>(glm_lis)</span></code></pre></div>
 <pre><code>## Using  as id variables</code></pre>
-<div class="figure"><span id="fig:unnamed-chunk-48"></span>
-<img src="BIO8940_book_files/figure-html/unnamed-chunk-48-1.svg" alt="Q-Q plots of model coefficients for GLM fits on each genotype" width="672" />
+<div class="figure"><span id="fig:unnamed-chunk-49"></span>
+<img src="BIO8940_book_files/figure-html/unnamed-chunk-49-1.svg" alt="Q-Q plots of model coefficients for GLM fits on each genotype" width="672" />
 <p class="caption">
 Figure 6.9: Q-Q plots of model coefficients for GLM fits on each genotype
 </p>
@@ -567,6 +569,7 @@ We should nonetheless take care to see if the coefficients for these genotypes f
 <div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="6-1-practical-3.html#cb93-1"></a><span class="kw">overdisp_fun</span>(mp1)</span></code></pre></div>
 <pre><code>##       chisq       ratio           p 
 ## 13909.46562    23.25998     0.00000</code></pre>
+<!-- add description of the overdispersion function -->
 <p>We can ignore the model convergence for the moment. This shows that the data are (extremely) over-dispersed, given the model.</p>
 <p>Now we add the observation-level random effect to the model to account for overdispersion <span class="citation">(Elston et al. <a href="#ref-elston2001" role="doc-biblioref">2001</a>)</span>.</p>
 <div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="6-1-practical-3.html#cb95-1"></a>mp2 &lt;-<span class="st"> </span><span class="kw">update</span>(mp1, . <span class="op">~</span><span class="st"> </span>. <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>X))</span></code></pre></div>
@@ -754,8 +757,8 @@ The code below took about half an hour on a reasonably modern desktop computer.<
 <span id="cb134-16"><a href="6-1-practical-3.html#cb134-16"></a><span class="st">  </span><span class="kw">theme_classic</span>() <span class="op">+</span></span>
 <span id="cb134-17"><a href="6-1-practical-3.html#cb134-17"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
 <span id="cb134-18"><a href="6-1-practical-3.html#cb134-18"></a>p1 <span class="op">+</span><span class="st"> </span>p2</span></code></pre></div>
-<div class="figure"><span id="fig:unnamed-chunk-63"></span>
-<img src="BIO8940_book_files/figure-html/unnamed-chunk-63-1.svg" alt="Distribution of BLUPs for genotypes and populations" width="672" />
+<div class="figure"><span id="fig:unnamed-chunk-64"></span>
+<img src="BIO8940_book_files/figure-html/unnamed-chunk-64-1.svg" alt="Distribution of BLUPs for genotypes and populations" width="672" />
 <p class="caption">
 Figure 6.10: Distribution of BLUPs for genotypes and populations
 </p>
@@ -819,8 +822,8 @@ Test now the reduced model.</p>
 <span id="cb145-3"><a href="6-1-practical-3.html#cb145-3"></a><span class="st">  </span><span class="kw">geom_qq</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_qq_line</span>() <span class="op">+</span></span>
 <span id="cb145-4"><a href="6-1-practical-3.html#cb145-4"></a><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>grpvar) <span class="op">+</span></span>
 <span id="cb145-5"><a href="6-1-practical-3.html#cb145-5"></a><span class="st">  </span><span class="kw">theme_classic</span>()</span></code></pre></div>
-<div class="figure"><span id="fig:unnamed-chunk-66"></span>
-<img src="BIO8940_book_files/figure-html/unnamed-chunk-66-1.svg" alt="Q-Q plot of BLUPs from model mp5" width="672" />
+<div class="figure"><span id="fig:unnamed-chunk-67"></span>
+<img src="BIO8940_book_files/figure-html/unnamed-chunk-67-1.svg" alt="Q-Q plot of BLUPs from model mp5" width="672" />
 <p class="caption">
 Figure 6.11: Q-Q plot of BLUPs from model mp5
 </p>
@@ -842,7 +845,7 @@ Figure 6.11: Q-Q plot of BLUPs from model mp5
 </div>
 <div id="happy-generalized-mixed-modelling" class="section level3">
 <h3><span class="header-section-number">6.1.10</span> Happy generalized mixed-modelling</h3>
-<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-68"></span>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-69"></span>
 <img src="images/Thorn.png" alt="A GLMM character" width="50%" />
 <p class="caption">
 Figure 6.12: A GLMM character
